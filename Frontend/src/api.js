@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:8080/api');
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? "https://datalive-2.onrender.com/api" : "http://localhost:8080/api");
 
 // Helper for API calls
 async function fetchAPI(url, options = {}) {

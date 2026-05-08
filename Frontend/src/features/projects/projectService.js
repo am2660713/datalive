@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? "/api" : "https://datalive-2.onrender.com/api");
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.PROD ? "https://datalive-2.onrender.com/api" : "http://localhost:8080/api");
 const API_URL = `${API_BASE}/projects`;
 
 // 🔹 Create

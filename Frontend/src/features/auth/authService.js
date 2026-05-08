@@ -1,11 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// const API_URL = "http://localhost:8080/api/auth";
+const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
 // Register user
 const register = async (userData) => {
-  const response = await axios.post(`http://localhost:8080/api/auth/register`, userData);
+  const response = await axios.post(`${API_URL}/auth/register`, userData);
 
   if (response.data) {
     localStorage.setItem("user", JSON.stringify(response.data.user)); // ✅ only user
@@ -17,7 +17,7 @@ const register = async (userData) => {
 
 // Login user
 const login = async (userData) => {
-  const response = await axios.post(`http://localhost:8080/api/auth/login`, userData);
+  const response = await axios.post(`${API_URL}/auth/login`, userData);
 
   if (response.data) {
     localStorage.setItem("user", JSON.stringify(response.data.user));

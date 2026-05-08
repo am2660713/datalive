@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 // Helper for API calls
 async function fetchAPI(url, options = {}) {
@@ -21,12 +21,12 @@ async function fetchAPI(url, options = {}) {
 }
 export const targetAPI = {
   get: async (email) => {
-    const res = await fetch(`http://localhost:8080/api/target/${email}`);
+    const res = await fetch(`${API_BASE}/target/${email}`);
     return res.json();
   },
 
   save: async (data) => {
-    const res = await fetch(`http://localhost:8080/api/target`, {
+    const res = await fetch(`${API_BASE}/target`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

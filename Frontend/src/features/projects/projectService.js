@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api"}/projects`;
+const API_BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? "/api" : "http://localhost:8080/api");
+const API_URL = `${API_BASE}/projects`;
 
 // 🔹 Create
 const createProject = async (data, token) => {

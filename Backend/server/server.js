@@ -26,11 +26,16 @@ const allowedOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:5173")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
+const allowedOriginPatterns = [/^https:\/\/.+\.vercel\.app$/];
 
 // middleware
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      allowedOriginPatterns.some((pattern) => pattern.test(origin))
+    ) {
       return callback(null, true);
     }
 

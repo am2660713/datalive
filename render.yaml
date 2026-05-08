@@ -15,3 +15,16 @@ services:
         generateValue: true
       - key: CLIENT_ORIGIN
         sync: false
+  - type: web
+    name: datalive-frontend
+    runtime: static
+    rootDir: Frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false

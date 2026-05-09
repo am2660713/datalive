@@ -339,7 +339,12 @@ function sortTable(field) {
         sum +
         rows.reduce((rowSum, row, index) => {
           if (row.project !== projectKey) return rowSum;
+
+          // Exclude the currently-edited row so remaining-hours is computed correctly.
+          // `exclude.month` should be the month KEY used in `daily` (e.g., "January").
+          // `exclude.index` is the row index within that month array.
           if (exclude && exclude.month === m && exclude.index === index) return rowSum;
+
           // Only count billable hours against project allocation.
           return rowSum + (Number(row.b) || 0);
         }, 0)
@@ -620,9 +625,9 @@ function sortTable(field) {
         addDailyEntry,
         updateDailyEntry,
         deleteDailyEntry,
-setMonth,
-target,
-  setTarget,
+        setMonth,
+        target,
+        setTarget,
         exportCSV,
         logout,
       }}

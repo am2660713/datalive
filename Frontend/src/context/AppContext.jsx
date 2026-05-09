@@ -357,17 +357,29 @@ function sortTable(field) {
   function validateDailyEntry(entry, exclude = null) {
     const projectName = entry.project.trim();
     if (!projectName) return { valid: true };
+
     const totalHours = getProjectTotalHours(projectName);
     if (!totalHours) return { valid: true };
-    const currentUsage = calculateProjectUsage(projectName, exclude, activeMonth);
 
-    // Allocation applies to billable hours only.
     const newEntryBillableHours = Number(entry.b) || 0;
+
+    // If user is entering a specific date, enforce remaining for that date's month,
+    // regardless of which month is currently selected in UI.
+    let monthToCheck = activeMonth;
+    if (entry.date) {
+      const parsed = new Date(entry.date);
+      if (!Number.isNaN(parsed.getTime())) {
+        monthToCheck = parsed.toLocaleString("en-US", { month: "long" }) || monthToCheck;
+      }
+    }
+
+    const currentUsage = calculateProjectUsage(projectName, exclude, monthToCheck);
     const remaining = totalHours - currentUsage;
+
     if (newEntryBillableHours > remaining) {
       return {
         valid: false,
-        message: `Project '${projectName}' only has ${remaining.toFixed(1)}h remaining billable. This entry requires ${newEntryBillableHours.toFixed(1)}h billable.`,
+        message: `Project '${projectName}' only has ${remaining.toFixed(1)}h remaining billable for ${monthToCheck}. This entry requires ${newEntryBillableHours.toFixed(1)}h billable.`,
       };
     }
 

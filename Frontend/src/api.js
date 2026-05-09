@@ -2,6 +2,11 @@ const API_BASE =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.PROD ? "https://datalive-2.onrender.com/api" : "http://localhost:8080/api");
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 // Helper for API calls
 async function fetchAPI(url, options = {}) {
   try {
@@ -9,6 +14,7 @@ async function fetchAPI(url, options = {}) {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
         ...options.headers,
       },
     });
@@ -23,7 +29,9 @@ async function fetchAPI(url, options = {}) {
 }
 export const targetAPI = {
   get: async (email) => {
-    const res = await fetch(`${API_BASE}/target/${email}`);
+    const res = await fetch(`${API_BASE}/target/${email}`, {
+      headers: getAuthHeaders(),
+    });
     return res.json();
   },
 
@@ -32,6 +40,7 @@ export const targetAPI = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(data),
     });

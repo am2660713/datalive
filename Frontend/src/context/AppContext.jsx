@@ -22,21 +22,6 @@ const initialDaily = {
   December: [],
 };
 
-const initialMonthly = [
-  { month: "January", total: 0, billable: 0, nonBillable: 0 },
-  { month: "February", total: 0, billable: 0, nonBillable: 0 },
-  { month: "March", total: 0, billable: 0, nonBillable: 0 },
-  { month: "April", total: 0, billable: 0, nonBillable: 0 },
-  { month: "May", total: 0, billable: 0, nonBillable: 0 },
-  { month: "June", total: 0, billable: 0, nonBillable: 0 },
-  { month: "July", total: 0, billable: 0, nonBillable: 0 },
-  { month: "August", total: 0, billable: 0, nonBillable: 0 },
-  { month: "September", total: 0, billable: 0, nonBillable: 0 },
-  { month: "October", total: 0, billable: 0, nonBillable: 0 },
-  { month: "November", total: 0, billable: 0, nonBillable: 0 },
-  { month: "December", total: 0, billable: 0, nonBillable: 0 },
-];
-
 const defaultModalValues = {
   name: "",
   client: "",
@@ -122,6 +107,9 @@ export function AppProvider({ children }) {
       const rawUser = localStorage.getItem("user");
       // const isAuthenticated = localStorage.getItem(AUTH_ENABLED_KEY) === "true";
       if (!rawUser ) {
+        setAuthUser(null);
+        setProjects(defaultProjects);
+        setDaily(initialDaily);
         setIsLoading(false);
         return;
       }
@@ -204,7 +192,7 @@ export function AppProvider({ children }) {
   //   saveMonthlyData();
   // }, [monthly, authUser, isLoading]);
   useEffect(() => {
-    if (!authUser || isLoading) return;
+    if (!authUser?.email || isLoading) return;
   
     const timeout = setTimeout(() => {
       targetAPI.save({
@@ -215,7 +203,7 @@ export function AppProvider({ children }) {
     }, 500); // delay
   
     return () => clearTimeout(timeout);
-  }, [target]);
+  }, [authUser?.email, isLoading, target]);
   function exportCSV() {
     const headers = ["Sr", "Project Name", "Client", "Product Line", "Job Type", "Hours", "WEB Version", "Status", "Timesheet"];
     const rows = filteredProjects.map((project) => [
@@ -480,6 +468,8 @@ function sortTable(field) {
   function logout() {
     localStorage.removeItem(AUTH_USER_KEY);
     localStorage.removeItem(AUTH_ENABLED_KEY);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setAuthUser(null);
     setProjects(defaultProjects);
     setDaily(initialDaily);
@@ -490,6 +480,7 @@ function sortTable(field) {
     setFilters({ f0: "", f1: "", f2: "", f3: "", f4: "", f6: "", f7: "", f8: "" });
     setSortDir({});
     setChartsVisible(false);
+    window.dispatchEvent(new Event("app-auth-updated"));
   }
 
   function toggleFilters() {

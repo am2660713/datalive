@@ -6,7 +6,7 @@ const API_URL =
 
 const authClient = axios.create({
   baseURL: API_URL,
-  timeout: 20000,
+  timeout: 10000,
 });
 
 const notifyAuthUpdated = () => {

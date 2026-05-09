@@ -329,20 +329,24 @@ function sortTable(field) {
     setModalValues(defaultModalValues);
   }
 
-  function calculateProjectUsage(projectName, exclude = null) {
+  function calculateProjectUsage(projectName, exclude = null, month = null) {
     const projectKey = projectName.trim();
-    return Object.entries(daily).reduce((sum, [month, rows]) => {
+    const monthsToCheck = month ? [month] : Object.keys(daily);
+
+    return monthsToCheck.reduce((sum, m) => {
+      const rows = daily[m] || [];
       return (
         sum +
         rows.reduce((rowSum, row, index) => {
           if (row.project !== projectKey) return rowSum;
-          if (exclude && exclude.month === month && exclude.index === index) return rowSum;
-          // Only count billable hours against project allocation/target.
+          if (exclude && exclude.month === m && exclude.index === index) return rowSum;
+          // Only count billable hours against project allocation.
           return rowSum + (Number(row.b) || 0);
         }, 0)
       );
     }, 0);
   }
+
 
 
   function getProjectTotalHours(projectName) {
@@ -355,7 +359,8 @@ function sortTable(field) {
     if (!projectName) return { valid: true };
     const totalHours = getProjectTotalHours(projectName);
     if (!totalHours) return { valid: true };
-    const currentUsage = calculateProjectUsage(projectName, exclude);
+    const currentUsage = calculateProjectUsage(projectName, exclude, activeMonth);
+
     // Allocation applies to billable hours only.
     const newEntryBillableHours = Number(entry.b) || 0;
     const remaining = totalHours - currentUsage;

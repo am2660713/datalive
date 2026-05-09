@@ -537,6 +537,7 @@ function sortTable(field) {
       billablePct: total > 0 ? ((billable / total) * 100).toFixed(1) : 0,
     };
   }, [daily, activeMonth]);
+
   const monthly = useMemo(() => {
     return Object.keys(daily).map((month) => {
       const rows = daily[month] || [];

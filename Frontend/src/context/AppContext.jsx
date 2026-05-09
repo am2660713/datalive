@@ -372,7 +372,7 @@ function sortTable(field) {
     const currentUsage = calculateProjectUsage(projectName, exclude);
     const remaining = totalHours - currentUsage;
 
-    if (newEntryBillableHours > remaining) {
+    if (newEntryBillableHours > Number(remaining.toFixed(2))) {
       return {
         valid: false,
         message: `Project '${projectName}' only has ${Math.max(0, remaining).toFixed(1)}h remaining billable. This entry requires ${newEntryBillableHours.toFixed(1)}h billable.`,

@@ -51,24 +51,6 @@ export default function DailyTable() {
   const remainingProjectHours =
     projectTotalHours > 0 ? projectTotalHours - projectCurrentUsage : null;
 
-  const dailyBillableUsageForThisProject = Object.entries(daily).reduce(
-    (sum, [month, monthRows]) => {
-      return (
-        sum +
-        monthRows.reduce((rowSum, row, index) => {
-          if (row.project !== form.project) return rowSum;
-          if (!form.date || row.date !== form.date) return rowSum;
-          if (editIndex >= 0 && month === activeMonth && index === editIndex) return rowSum;
-          return rowSum + (Number(row.b) || 0);
-        }, 0)
-      );
-    },
-    0
-  );
-
-  const remainingDailyBillableHours =
-    projectTotalHours > 0 ? projectTotalHours - dailyBillableUsageForThisProject : null;
-
   const resetForm = () => {
     setForm(emptyForm);
     setEditIndex(-1);
@@ -97,11 +79,11 @@ export default function DailyTable() {
     const newBillableHours = Number(form.b) || 0;
 
     if (
-      remainingDailyBillableHours !== null &&
-      newBillableHours > remainingDailyBillableHours
+      remainingProjectHours !== null &&
+      newBillableHours > Number(remainingProjectHours.toFixed(2))
     ) {
       setError(
-        `This project has only ${remainingDailyBillableHours.toFixed(1)}h billable remaining for this date. This entry requires ${newBillableHours.toFixed(1)}h billable.`
+        `This project has only ${Math.max(0, remainingProjectHours).toFixed(1)}h billable remaining overall. This entry requires ${newBillableHours.toFixed(1)}h billable.`
       );
       return;
     }
@@ -214,7 +196,6 @@ export default function DailyTable() {
                 <div className="daily-hint">
                   <span>Project limit: {projectTotalHours}h</span>
                   <span>Remaining: {Math.max(0, remainingProjectHours).toFixed(1)}h</span>
-                  <span>Today left: {Math.max(0, remainingDailyBillableHours).toFixed(1)}h</span>
                 </div>
               )}
             </div>

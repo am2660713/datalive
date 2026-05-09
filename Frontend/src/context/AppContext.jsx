@@ -337,11 +337,13 @@ function sortTable(field) {
         rows.reduce((rowSum, row, index) => {
           if (row.project !== projectKey) return rowSum;
           if (exclude && exclude.month === month && exclude.index === index) return rowSum;
-          return rowSum + (Number(row.b) || 0) + (Number(row.nb) || 0);
+          // Only count billable hours against project allocation/target.
+          return rowSum + (Number(row.b) || 0);
         }, 0)
       );
     }, 0);
   }
+
 
   function getProjectTotalHours(projectName) {
     const project = projects.find((item) => item.name === projectName.trim());

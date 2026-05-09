@@ -20,7 +20,9 @@ export const register = createAsyncThunk(
       return await authService.register(userData);
     } catch (error) {
       const message =
-        error.response?.data?.message || error.message || error.toString();
+        error.code === "ECONNABORTED"
+          ? "Signup is taking too long. Please try again."
+          : error.response?.data?.message || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -34,7 +36,9 @@ export const login = createAsyncThunk(
       return await authService.login(userData);
     } catch (error) {
       const message =
-        error.response?.data?.message || error.message || error.toString();
+        error.code === "ECONNABORTED"
+          ? "Login is taking too long. Please try again."
+          : error.response?.data?.message || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }

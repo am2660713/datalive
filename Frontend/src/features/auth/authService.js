@@ -4,6 +4,11 @@ const API_URL =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.PROD ? "https://datalive-2.onrender.com/api" : "http://localhost:8080/api");
 
+const authClient = axios.create({
+  baseURL: API_URL,
+  timeout: 20000,
+});
+
 const notifyAuthUpdated = () => {
   window.dispatchEvent(new Event("app-auth-updated"));
 };
@@ -15,7 +20,7 @@ const saveAuth = (data) => {
 };
 
 const register = async (userData) => {
-  const response = await axios.post(`${API_URL}/auth/register`, userData);
+  const response = await authClient.post("/auth/register", userData);
 
   if (response.data) {
     saveAuth(response.data);
@@ -25,7 +30,7 @@ const register = async (userData) => {
 };
 
 const login = async (userData) => {
-  const response = await axios.post(`${API_URL}/auth/login`, userData);
+  const response = await authClient.post("/auth/login", userData);
 
   if (response.data) {
     saveAuth(response.data);

@@ -118,10 +118,21 @@ export function AppProvider({ children }) {
         setAuthUser(user);
         const userEmail = user.email;
 
-        const storedProjects = await projectAPI.getAll(userEmail);
-        const storedDaily = await dailyAPI.getAll(userEmail);
-        // const storedMonthly = await monthlyAPI.getAll(userEmail);
-        const storedTarget = await targetAPI.get(userEmail);
+        const [projectsResult, dailyResult, targetResult] = await Promise.allSettled([
+          projectAPI.getAll(userEmail),
+          dailyAPI.getAll(userEmail),
+          targetAPI.get(userEmail),
+        ]);
+
+        const storedProjects = projectsResult.status === "fulfilled" ? projectsResult.value : [];
+        const storedDaily = dailyResult.status === "fulfilled" ? dailyResult.value : [];
+        const storedTarget = targetResult.status === "fulfilled" ? targetResult.value : null;
+
+        [projectsResult, dailyResult, targetResult].forEach((result) => {
+          if (result.status === "rejected") {
+            console.warn("Error loading dashboard data:", result.reason);
+          }
+        });
 
         if (storedTarget) {
           setTarget({

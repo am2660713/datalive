@@ -356,14 +356,16 @@ function sortTable(field) {
     const totalHours = getProjectTotalHours(projectName);
     if (!totalHours) return { valid: true };
     const currentUsage = calculateProjectUsage(projectName, exclude);
-    const newEntryHours = (Number(entry.b) || 0) + (Number(entry.nb) || 0);
+    // Allocation applies to billable hours only.
+    const newEntryBillableHours = Number(entry.b) || 0;
     const remaining = totalHours - currentUsage;
-    if (newEntryHours > remaining) {
+    if (newEntryBillableHours > remaining) {
       return {
         valid: false,
-        message: `Project '${projectName}' only has ${remaining.toFixed(1)}h remaining. This entry requires ${newEntryHours.toFixed(1)}h.`,
+        message: `Project '${projectName}' only has ${remaining.toFixed(1)}h remaining billable. This entry requires ${newEntryBillableHours.toFixed(1)}h billable.`,
       };
     }
+
     return { valid: true };
   }
 

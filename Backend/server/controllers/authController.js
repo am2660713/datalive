@@ -96,15 +96,7 @@ export const getEmployees = async (req, res) => {
       return res.status(403).json({ message: "Only managers can view employees" });
     }
 
-    const employeeQuery = {
-      $or: [
-        { role: "employee" },
-        { role: { $exists: false } },
-        { role: null },
-      ],
-    };
-
-    const employees = await User.find(employeeQuery)
+    const employees = await User.find({ _id: { $ne: req.user._id } })
       .select("_id name email role")
       .sort({ name: 1 });
 

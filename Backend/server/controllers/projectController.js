@@ -1,14 +1,6 @@
 import Project from "../models/Project.js";
 import User from "../models/User.js";
 
-const employeeUserQuery = {
-  $or: [
-    { role: "employee" },
-    { role: { $exists: false } },
-    { role: null },
-  ],
-};
-
 export const createProject = async (req, res) => {
   try {
     const { assigneeId, ...projectPayload } = req.body;
@@ -22,8 +14,7 @@ export const createProject = async (req, res) => {
       }
 
       const employee = await User.findOne({
-        _id: assigneeId,
-        ...employeeUserQuery,
+        $and: [{ _id: assigneeId }, { _id: { $ne: req.user._id } }],
       });
       if (!employee) {
         return res.status(400).json({ message: "Selected employee not found" });
@@ -53,7 +44,7 @@ export const getProjects = async (req, res) => {
     let query = { user: req.user.id };
 
     if (req.user.role === "manager") {
-      const employees = await User.find(employeeUserQuery).select("_id");
+      const employees = await User.find({ _id: { $ne: req.user._id } }).select("_id");
       query = { user: { $in: employees.map((employee) => employee._id) } };
     }
 

@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { getEffectiveRole, isApprovedManagerEmail } from "../utils/roles.js";
 
 export const loginUser = async (req, res) => {
   try {
@@ -31,7 +32,7 @@ export const loginUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        role: getEffectiveRole(user),
       },
     });
   } catch (error) {
@@ -56,7 +57,8 @@ export const registerUser = async (req, res) => {
     const normalizedRole =
       role === "manager" &&
       process.env.MANAGER_INVITE_CODE &&
-      managerInviteCode === process.env.MANAGER_INVITE_CODE
+      managerInviteCode === process.env.MANAGER_INVITE_CODE &&
+      isApprovedManagerEmail(email)
         ? "manager"
         : "employee";
 
@@ -86,7 +88,7 @@ export const registerUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        role: getEffectiveRole(user),
       },
     });
   } catch (error) {

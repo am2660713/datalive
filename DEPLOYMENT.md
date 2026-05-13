@@ -23,7 +23,11 @@ Environment variables:
 MONGO_URI=your MongoDB Atlas connection string
 JWT_SECRET=any long random secret
 CLIENT_ORIGIN=https://your-site-name.netlify.app
+MANAGER_EMAILS=manager@example.com
+MANAGER_INVITE_CODE=private-code-for-manager-creation
 ```
+
+`MANAGER_EMAILS` is required for manager permissions. Add only trusted manager email addresses, separated by commas.
 
 After deploy, Render gives a free URL like:
 

@@ -6,6 +6,7 @@ export default function Topbar() {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const roleLabel = user?.role === "manager" ? "Manager" : "Employee";
 
   const handleLogout = async () => {
     await dispatch(logout());
@@ -28,6 +29,7 @@ export default function Topbar() {
       </div>
       <div className="topbar-user">
         <span>{user?.name || "Guest"}</span>
+        {user && <span className="role-badge">{roleLabel}</span>}
         {user ? (
           <button onClick={handleLogout} className="btn btn-ghost btn-small">
             Logout

@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import { projectAPI, dailyAPI } from "../api";
 import { targetAPI } from "../api";
 const AUTH_USER_KEY = "project-dashboard-auth-user";
@@ -55,6 +56,7 @@ export function AppProvider({ children }) {
   const [filters, setFilters] = useState({ f0: "", f1: "", f2: "", f3: "", f4: "", f6: "", f7: "", f8: "" });
   const [sortDir, setSortDir] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const reduxProjects = useSelector((state) => state.projects.projects);
 
   const normalizeId = (doc) => ({
     ...doc,
@@ -100,6 +102,10 @@ export function AppProvider({ children }) {
     return results;
   }, [projects, searchQuery, filters, sortDir]);
 
+  useEffect(() => {
+    setProjects(reduxProjects.map((project) => normalizeId(project)));
+  }, [reduxProjects]);
+
 // Load user and data from MongoDB via API
   useEffect(() => {
     const loadUser = async () => {
@@ -119,17 +125,15 @@ export function AppProvider({ children }) {
         setAuthUser(user);
         const userEmail = user.email;
 
-        const [projectsResult, dailyResult, targetResult] = await Promise.allSettled([
-          projectAPI.getAll(userEmail),
+        const [dailyResult, targetResult] = await Promise.allSettled([
           dailyAPI.getAll(userEmail),
           targetAPI.get(userEmail),
         ]);
 
-        const storedProjects = projectsResult.status === "fulfilled" ? projectsResult.value : [];
         const storedDaily = dailyResult.status === "fulfilled" ? dailyResult.value : [];
         const storedTarget = targetResult.status === "fulfilled" ? targetResult.value : null;
 
-        [projectsResult, dailyResult, targetResult].forEach((result) => {
+        [dailyResult, targetResult].forEach((result) => {
           if (result.status === "rejected") {
             console.warn("Error loading dashboard data:", result.reason);
           }
@@ -141,22 +145,6 @@ export function AppProvider({ children }) {
             monthlyTargets: storedTarget.monthlyTargets || {},
           });
         }
-        if (storedProjects.length) {
-          const projs = storedProjects.map((p) => ({
-            ...normalizeId(p),
-            sr: p.sr,
-            name: p.name,
-            client: p.client,
-            product: p.product,
-            jobType: p.jobType,
-            hours: p.hours,
-            web: p.web,
-            status: p.status,
-            timesheet: p.timesheet,
-          }));
-          setProjects(projs);
-        }
-
         if (storedDaily.length) {
           const dailyObj = getInitialDaily();
           storedDaily.forEach((entry) => {
@@ -217,8 +205,12 @@ export function AppProvider({ children }) {
     return () => clearTimeout(timeout);
   }, [authUser?.email, isLoading, target]);
   function exportCSV() {
+    const showAssignedTo = authUser?.role === "manager";
     const headers = ["Sr", "Project Name", "Client", "Product Line", "Job Type", "Hours", "WEB Version", "Status", "Timesheet"];
-    const rows = filteredProjects.map((project) => [
+    if (showAssignedTo) headers.push("Assigned To");
+
+    const rows = filteredProjects.map((project) => {
+      const row = [
       project.sr,
       project.name,
       project.client,
@@ -228,7 +220,11 @@ export function AppProvider({ children }) {
       project.web,
       project.status,
       project.timesheet,
-    ]);
+      ];
+
+      if (showAssignedTo) row.push(project.user?.name || "");
+      return row;
+    });
     const csv = [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const link = document.createElement("a");

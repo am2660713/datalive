@@ -8,7 +8,11 @@ export const createProject = async (req, res) => {
     let projectOwnerId = req.user.id;
     let assignedBy = null;
 
-    if (req.user.role === "manager" && assigneeId) {
+    if (req.user.role === "manager") {
+      if (!assigneeId) {
+        return res.status(400).json({ message: "Please select an employee" });
+      }
+
       const employee = await User.findOne({ _id: assigneeId, role: "employee" });
       if (!employee) {
         return res.status(400).json({ message: "Selected employee not found" });
@@ -55,6 +59,7 @@ export const getProjects = async (req, res) => {
 
 export const updateProject = async (req, res) => {
   try {
+    const { user, assignedBy, assigneeId, ...projectPayload } = req.body;
     const project = await Project.findById(req.params.id);
 
     if (!project) {
@@ -68,7 +73,7 @@ export const updateProject = async (req, res) => {
       return res.status(401).json({ message: "Not authorized" });
     }
 
-    const updated = await Project.findByIdAndUpdate(req.params.id, req.body, {
+    const updated = await Project.findByIdAndUpdate(req.params.id, projectPayload, {
       new: true,
     })
       .populate("user", "name email role")

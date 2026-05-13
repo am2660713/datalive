@@ -50,21 +50,21 @@ export const targetAPI = {
 };
 // Projects API
 export const projectAPI = {
-  async getAll(email) {
-    return fetchAPI(`${API_BASE}/projects/${encodeURIComponent(email)}`);
+  async getAll() {
+    return fetchAPI(`${API_BASE}/projects`);
   },
 
-  async add(project, email) {
+  async add(project) {
     return fetchAPI(`${API_BASE}/projects`, {
       method: 'POST',
-      body: JSON.stringify({ project, userEmail: email }),
+      body: JSON.stringify(project),
     });
   },
 
   async update(id, project) {
     return fetchAPI(`${API_BASE}/projects/${id}`, {
       method: 'PUT',
-      body: JSON.stringify({ project }),
+      body: JSON.stringify(project),
     });
   },
 

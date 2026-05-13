@@ -9,10 +9,6 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// ❗ IMPORTANT: models import karo
-import Project from "./models/Project.js";
-
-
 dotenv.config();
 connectDB();
 
@@ -53,17 +49,6 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/target", targetRoutes);
-// ✅ GET projects by email (SAFE VERSION)
-app.get("/api/projects/:email", async (req, res) => {
-  try {
-    const { email } = req.params;
-    const projects = await Project.find({ userEmail: email });
-    res.json(projects);
-  } catch (error) {
-    console.error("Projects error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 // ✅ GET daily
 app.use("/api/daily", dailyRoutes);

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteProject, updateProject } from "../features/projects/projectSlice";
+import { useAppContext } from "../context/AppContext";
 
 export default function ProjectTable() {
   const dispatch = useDispatch();
   const [editingId, setEditingId] = useState(null);
   const [editValues, setEditValues] = useState({});
 
-  const { projects } = useSelector((state) => state.projects);
+  const { filteredProjects } = useAppContext();
   const user = useSelector((state) => state.auth.user);
 
   const showAssignedTo = user?.role === "manager";
@@ -75,14 +76,14 @@ export default function ProjectTable() {
         </thead>
 
         <tbody>
-          {projects.length === 0 ? (
+          {filteredProjects.length === 0 ? (
             <tr>
               <td colSpan={showAssignedTo ? "11" : "10"} style={{ textAlign: "center" }}>
                 No Projects Found
               </td>
             </tr>
           ) : (
-            projects.map((project, index) => {
+            filteredProjects.map((project, index) => {
               const isEditing = editingId === project._id;
 
               return (

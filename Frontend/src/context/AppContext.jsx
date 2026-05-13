@@ -7,7 +7,7 @@ const AUTH_ENABLED_KEY = "project-dashboard-authenticated";
 
 const defaultProjects = [];
 
-const initialDaily = {
+const getInitialDaily = () => ({
   January: [],
   February: [],
   March: [],
@@ -20,7 +20,7 @@ const initialDaily = {
   October: [],
   November: [],
   December: [],
-};
+});
 
 const defaultModalValues = {
   name: "",
@@ -42,7 +42,7 @@ export function AppProvider({ children }) {
   });
   const [authUser, setAuthUser] = useState(null);
   const [projects, setProjects] = useState(defaultProjects);
-  const [daily, setDaily] = useState(initialDaily);
+  const [daily, setDaily] = useState(getInitialDaily);
   // const [monthly, setMonthly] = useState(initialMonthly);
   const [activeSheet, setActiveSheet] = useState("projects");
   const [activeMonth, setActiveMonth] = useState("");
@@ -103,13 +103,14 @@ export function AppProvider({ children }) {
 // Load user and data from MongoDB via API
   useEffect(() => {
     const loadUser = async () => {
+      setIsLoading(true);
     
       const rawUser = localStorage.getItem("user");
       // const isAuthenticated = localStorage.getItem(AUTH_ENABLED_KEY) === "true";
       if (!rawUser ) {
         setAuthUser(null);
         setProjects(defaultProjects);
-        setDaily(initialDaily);
+        setDaily(getInitialDaily());
         setIsLoading(false);
         return;
       }
@@ -157,7 +158,7 @@ export function AppProvider({ children }) {
         }
 
         if (storedDaily.length) {
-          const dailyObj = { ...initialDaily };
+          const dailyObj = getInitialDaily();
           storedDaily.forEach((entry) => {
             const monthKey = entry.month ? entry.month : entry.date ? new Date(entry.date).toLocaleString("en-US", { month: "long" }) : null;
             if (monthKey && dailyObj[monthKey]) {
@@ -500,7 +501,7 @@ function sortTable(field) {
     localStorage.removeItem("token");
     setAuthUser(null);
     setProjects(defaultProjects);
-    setDaily(initialDaily);
+    setDaily(getInitialDaily());
     // setMonthly(initialMonthly);
     setActiveSheet("projects");
     setActiveMonth("");

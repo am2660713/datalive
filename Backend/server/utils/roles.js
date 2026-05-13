@@ -10,7 +10,7 @@ export const isApprovedManagerEmail = (email) => {
 };
 
 export const getEffectiveRole = (user) => {
-  if (user?.role === "manager" && isApprovedManagerEmail(user.email)) {
+  if (isApprovedManagerEmail(user?.email)) {
     return "manager";
   }
 

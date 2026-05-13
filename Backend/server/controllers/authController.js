@@ -41,7 +41,7 @@ export const loginUser = async (req, res) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, managerInviteCode } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
@@ -53,8 +53,12 @@ export const registerUser = async (req, res) => {
         .json({ message: "Password must be at least 6 characters" });
     }
 
-    const allowedRoles = ["manager", "employee"];
-    const normalizedRole = allowedRoles.includes(role) ? role : "employee";
+    const normalizedRole =
+      role === "manager" &&
+      process.env.MANAGER_INVITE_CODE &&
+      managerInviteCode === process.env.MANAGER_INVITE_CODE
+        ? "manager"
+        : "employee";
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {

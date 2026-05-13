@@ -15,7 +15,6 @@ export default function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "employee",
   });
 
   const [showPass, setShowPass] = useState(false);
@@ -41,9 +40,9 @@ export default function Signup() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const { name, email, password, confirmPassword, role } = form;
+    const { name, email, password, confirmPassword } = form;
 
-    if (!name || !email || !password || !confirmPassword || !role) {
+    if (!name || !email || !password || !confirmPassword) {
       alert("All fields are required");
       return;
     }
@@ -63,7 +62,7 @@ export default function Signup() {
       return;
     }
 
-    dispatch(register({ name, email, password, role }));
+    dispatch(register({ name, email, password }));
   };
 
   return (
@@ -128,16 +127,6 @@ export default function Signup() {
               onChange={handleChange}
               className="px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
-
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              className="px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            >
-              <option value="employee">Employee</option>
-              <option value="manager">Manager</option>
-            </select>
 
             <div className="relative">
               <input

@@ -1,16 +1,22 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAppContext } from "../context/AppContext";
-import { createProject } from "../features/projects/projectSlice";
+import { createProject, getEmployees } from "../features/projects/projectSlice";
 
 export default function Modal() {
   const dispatch = useDispatch();
   const { modalOpen, closeModal, modalValues, setModalValues } = useAppContext();
   const user = useSelector((state) => state.auth.user);
   const employees = useSelector((state) => state.projects.employees);
+  const isManager = user?.role === "manager";
+
+  useEffect(() => {
+    if (modalOpen && isManager) {
+      dispatch(getEmployees());
+    }
+  }, [dispatch, isManager, modalOpen]);
 
   if (!modalOpen) return null;
-
-  const isManager = user?.role === "manager";
 
   const handleSave = async () => {
     if (!modalValues.name || !modalValues.client || !modalValues.product) {
@@ -63,7 +69,7 @@ export default function Modal() {
               }
             >
               <option value="" disabled>
-                Select employee
+                {employees.length ? "Select employee" : "No employees found"}
               </option>
               {employees.map((employee) => (
                 <option key={employee._id} value={employee._id}>

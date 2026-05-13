@@ -96,11 +96,26 @@ export const getEmployees = async (req, res) => {
       return res.status(403).json({ message: "Only managers can view employees" });
     }
 
-    const employees = await User.find({ role: "employee" })
+    const employeeQuery = {
+      $or: [
+        { role: "employee" },
+        { role: { $exists: false } },
+        { role: null },
+      ],
+    };
+
+    const employees = await User.find(employeeQuery)
       .select("_id name email role")
       .sort({ name: 1 });
 
-    res.json(employees);
+    res.json(
+      employees.map((employee) => ({
+        _id: employee._id,
+        name: employee.name,
+        email: employee.email,
+        role: employee.role || "employee",
+      }))
+    );
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

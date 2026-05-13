@@ -94,6 +94,27 @@ body {
   box-shadow: 0 0 0 4px rgba(90, 141, 219, 0.12);
 }
 
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 74px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #2962ff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .primary-button {
   width: 100%;
   min-height: 46px;

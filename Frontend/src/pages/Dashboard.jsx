@@ -7,19 +7,23 @@ import YearlyTable from "../components/YearlyTable";
 import Modal from "../components/Modal";
 import { useAppContext } from "../context/AppContext";
 import { useDispatch, useSelector } from "react-redux";
-import { getProjects } from "../features/projects/projectSlice";
+import { getEmployees, getProjects } from "../features/projects/projectSlice";
 import { useEffect } from "react";
 
 export default function Dashboard() {
   const { activeSheet, switchSheet, chartsVisible, summary, authUser } = useAppContext();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (token) {
       dispatch(getProjects());
+      if (user?.role === "manager") {
+        dispatch(getEmployees());
+      }
     }
-  }, [dispatch, token]);
+  }, [dispatch, token, user?.role]);
 
   return (
     <div className="dashboard-shell">

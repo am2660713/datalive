@@ -34,13 +34,18 @@ const projectSchema = new mongoose.Schema(
     },
     timesheet: {
       type: String,
-      enum: ["Delivered", "—", "Pending"],
-      default: "—",
+      enum: ["Delivered", "-", "Pending", "Not Submitted"],
+      default: "-",
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // 🔥 important (auth ke liye)
+      ref: "User",
       required: true,
+    },
+    assignedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
     },
   },
   {

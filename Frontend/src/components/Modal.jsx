@@ -1,19 +1,25 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAppContext } from "../context/AppContext";
 import { createProject } from "../features/projects/projectSlice";
 
 export default function Modal() {
-  // ✅ Hooks ALWAYS top pe
   const dispatch = useDispatch();
   const { modalOpen, closeModal, modalValues, setModalValues } = useAppContext();
+  const user = useSelector((state) => state.auth.user);
+  const employees = useSelector((state) => state.projects.employees);
 
-  // ✅ Early return AFTER hooks
   if (!modalOpen) return null;
 
+  const isManager = user?.role === "manager";
+
   const handleSave = async () => {
-    // 🔥 validation
     if (!modalValues.name || !modalValues.client || !modalValues.product) {
       alert("Please fill required fields");
+      return;
+    }
+
+    if (isManager && !modalValues.assigneeId) {
+      alert("Please select an employee");
       return;
     }
 
@@ -21,13 +27,14 @@ export default function Modal() {
       await dispatch(
         createProject({
           ...modalValues,
+          assigneeId: isManager ? modalValues.assigneeId : undefined,
           status: modalValues.status || "Delivered",
           timesheet: modalValues.timesheet || "Delivered",
-          hours: Number(modalValues.hours) || 0, // ✅ fix
+          hours: Number(modalValues.hours) || 0,
         })
       );
 
-      closeModal(); // ✅ close after success
+      closeModal();
     } catch (err) {
       console.error(err);
     }
@@ -45,6 +52,27 @@ export default function Modal() {
         <h3>{modalValues.name ? "Edit Project" : "Add Project"}</h3>
 
         <div className="grid">
+          {isManager && (
+            <select
+              value={modalValues.assigneeId || ""}
+              onChange={(e) =>
+                setModalValues((prev) => ({
+                  ...prev,
+                  assigneeId: e.target.value,
+                }))
+              }
+            >
+              <option value="" disabled>
+                Select employee
+              </option>
+              {employees.map((employee) => (
+                <option key={employee._id} value={employee._id}>
+                  {employee.name} ({employee.email})
+                </option>
+              ))}
+            </select>
+          )}
+
           <input
             placeholder="Project name *"
             value={modalValues.name}

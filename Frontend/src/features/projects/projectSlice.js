@@ -3,12 +3,12 @@ import projectService from "./projectService";
 
 const initialState = {
   projects: [],
+  employees: [],
   isLoading: false,
   isError: false,
   message: "",
 };
 
-// 🔹 Create
 export const createProject = createAsyncThunk(
   "projects/create",
   async (data, thunkAPI) => {
@@ -21,7 +21,6 @@ export const createProject = createAsyncThunk(
   }
 );
 
-// 🔹 Get All
 export const getProjects = createAsyncThunk(
   "projects/getAll",
   async (_, thunkAPI) => {
@@ -34,7 +33,18 @@ export const getProjects = createAsyncThunk(
   }
 );
 
-// 🔹 Update
+export const getEmployees = createAsyncThunk(
+  "projects/getEmployees",
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.token;
+      return await projectService.getEmployees(token);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data?.message);
+    }
+  }
+);
+
 export const updateProject = createAsyncThunk(
   "projects/update",
   async ({ id, data }, thunkAPI) => {
@@ -47,7 +57,6 @@ export const updateProject = createAsyncThunk(
   }
 );
 
-// 🔹 Delete
 export const deleteProject = createAsyncThunk(
   "projects/delete",
   async (id, thunkAPI) => {
@@ -73,15 +82,16 @@ const projectSlice = createSlice({
       .addCase(getProjects.fulfilled, (state, action) => {
         state.projects = action.payload;
       })
+      .addCase(getEmployees.fulfilled, (state, action) => {
+        state.employees = action.payload;
+      })
       .addCase(updateProject.fulfilled, (state, action) => {
         state.projects = state.projects.map((p) =>
           p._id === action.payload._id ? action.payload : p
         );
       })
       .addCase(deleteProject.fulfilled, (state, action) => {
-        state.projects = state.projects.filter(
-          (p) => p._id !== action.payload
-        );
+        state.projects = state.projects.filter((p) => p._id !== action.payload);
       });
   },
 });

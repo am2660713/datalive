@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import heroImage from "../assets/hero.png";
 
@@ -15,6 +15,7 @@ export default function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
+    role: "employee",
   });
 
   const [showPass, setShowPass] = useState(false);
@@ -40,9 +41,9 @@ export default function Signup() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const { name, email, password, confirmPassword } = form;
+    const { name, email, password, confirmPassword, role } = form;
 
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword || !role) {
       alert("All fields are required");
       return;
     }
@@ -62,61 +63,43 @@ export default function Signup() {
       return;
     }
 
-    dispatch(register({ name, email, password }));
+    dispatch(register({ name, email, password, role }));
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#4D77B5] via-[#1e293b] to-[#0f172a] px-4">
       <div className="flex w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden">
-
-        {/* LEFT SIDE */}
         <div className="hidden md:flex w-1/2 relative overflow-hidden rounded-l-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-700 via-purple-700 to-blue-600"></div>
+          <div className="absolute inset-0 backdrop-blur-sm bg-white/5"></div>
+          <div className="relative z-10 flex flex-col justify-between p-10 text-white w-full">
+            <div>
+              <h1 className="text-4xl font-extrabold leading-tight">
+                Track Your Work <br />
+                <span className="text-indigo-200">Smarter</span>
+              </h1>
+              <p className="mt-4 text-sm text-indigo-100 leading-relaxed max-w-sm">
+                Manage your daily progress, track billable hours, and hit your goals
+                with a powerful dashboard designed for productivity.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <img
+                src={heroImage}
+                alt="hero"
+                className="w-52 drop-shadow-2xl hover:scale-105 transition duration-300"
+              />
+            </div>
+            <div className="space-y-2 text-sm text-indigo-100">
+              <div>Smart Analytics</div>
+              <div>Monthly Targets</div>
+              <div>Real-time Tracking</div>
+            </div>
+          </div>
+        </div>
 
-{/* 🔥 Gradient Background */}
-<div className="absolute inset-0 bg-gradient-to-br from-indigo-700 via-purple-700 to-blue-600"></div>
-
-{/* 🔥 Glass Overlay */}
-<div className="absolute inset-0 backdrop-blur-sm bg-white/5"></div>
-
-{/* 🔥 Content */}
-<div className="relative z-10 flex flex-col justify-between p-10 text-white w-full">
-
-  {/* TOP */}
-  <div>
-    <h1 className="text-4xl font-extrabold leading-tight">
-      Track Your Work <br />
-      <span className="text-indigo-200">Smarter 🚀</span>
-    </h1>
-
-    <p className="mt-4 text-sm text-indigo-100 leading-relaxed max-w-sm">
-      Manage your daily progress, track billable hours, and hit your goals
-      with a powerful dashboard designed for productivity.
-    </p>
-  </div>
-
-  {/* CENTER IMAGE */}
-  <div className="flex justify-center">
-    <img
-      src={heroImage}
-      alt="hero"
-      className="w-52 drop-shadow-2xl hover:scale-105 transition duration-300"
-    />
-  </div>
-
-  {/* BOTTOM FEATURES */}
-  <div className="space-y-2 text-sm text-indigo-100">
-    <div>✔ Smart Analytics</div>
-    <div>✔ Monthly Targets</div>
-    <div>✔ Real-time Tracking</div>
-  </div>
-
-</div>
-</div>
-
-        {/* RIGHT SIDE */}
         <div className="w-full md:w-1/2 p-8 md:p-10">
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
             <div className="space-y-2 text-center md:text-left">
               <p className="text-sm font-semibold text-slate-600 uppercase tracking-[0.25em]">
                 ICT Solutions Pvt Ltd
@@ -128,7 +111,6 @@ export default function Signup() {
               Create Account
             </h2>
 
-            {/* NAME */}
             <input
               name="name"
               type="text"
@@ -138,7 +120,6 @@ export default function Signup() {
               className="px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
 
-            {/* EMAIL */}
             <input
               name="email"
               type="email"
@@ -148,7 +129,16 @@ export default function Signup() {
               className="px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
 
-            {/* PASSWORD */}
+            <select
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              className="px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+            >
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+            </select>
+
             <div className="relative">
               <input
                 name="password"
@@ -166,7 +156,6 @@ export default function Signup() {
               </span>
             </div>
 
-            {/* CONFIRM PASSWORD */}
             <input
               name="confirmPassword"
               type="password"
@@ -176,14 +165,12 @@ export default function Signup() {
               className="px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
 
-            {/* ERROR */}
             {isError && (
               <div className="bg-red-100 text-red-600 p-2 rounded-lg text-sm text-center">
                 {message}
               </div>
             )}
 
-            {/* BUTTON */}
             <button
               type="submit"
               disabled={isLoading}
@@ -192,7 +179,6 @@ export default function Signup() {
               {isLoading ? "Creating..." : "Create Account"}
             </button>
 
-            {/* LINK */}
             <p className="text-sm text-center text-gray-600">
               Already have an account?{" "}
               <Link
@@ -202,7 +188,6 @@ export default function Signup() {
                 Login
               </Link>
             </p>
-
           </form>
         </div>
       </div>

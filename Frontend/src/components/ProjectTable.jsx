@@ -7,8 +7,10 @@ export default function ProjectTable() {
   const [editingId, setEditingId] = useState(null);
   const [editValues, setEditValues] = useState({});
 
-  // 🔥 Redux se data lo
   const { projects } = useSelector((state) => state.projects);
+  const user = useSelector((state) => state.auth.user);
+
+  const showAssignedTo = user?.role === "manager";
 
   const startEdit = (project) => {
     setEditingId(project._id);
@@ -67,6 +69,7 @@ export default function ProjectTable() {
             <th>WEB</th>
             <th>Status</th>
             <th>Timesheet</th>
+            {showAssignedTo && <th>Assigned To</th>}
             <th>Actions</th>
           </tr>
         </thead>
@@ -74,7 +77,7 @@ export default function ProjectTable() {
         <tbody>
           {projects.length === 0 ? (
             <tr>
-              <td colSpan="10" style={{ textAlign: "center" }}>
+              <td colSpan={showAssignedTo ? "11" : "10"} style={{ textAlign: "center" }}>
                 No Projects Found
               </td>
             </tr>
@@ -85,87 +88,15 @@ export default function ProjectTable() {
               return (
                 <tr key={project._id}>
                   <td>{index + 1}</td>
-
+                  <td>{isEditing ? <input className="table-input" value={editValues.name} onChange={(e) => handleFieldChange("name", e.target.value)} /> : project.name}</td>
+                  <td>{isEditing ? <input className="table-input" value={editValues.client} onChange={(e) => handleFieldChange("client", e.target.value)} /> : project.client}</td>
+                  <td>{isEditing ? <input className="table-input" value={editValues.product} onChange={(e) => handleFieldChange("product", e.target.value)} /> : project.product}</td>
+                  <td>{isEditing ? <input className="table-input" value={editValues.jobType} onChange={(e) => handleFieldChange("jobType", e.target.value)} /> : project.jobType}</td>
+                  <td>{isEditing ? <input className="table-input" type="number" value={editValues.hours} onChange={(e) => handleFieldChange("hours", e.target.value)} /> : project.hours || "-"}</td>
+                  <td>{isEditing ? <input className="table-input" value={editValues.web} onChange={(e) => handleFieldChange("web", e.target.value)} /> : project.web}</td>
                   <td>
                     {isEditing ? (
-                      <input
-                        className="table-input"
-                        value={editValues.name}
-                        onChange={(e) => handleFieldChange("name", e.target.value)}
-                      />
-                    ) : (
-                      project.name
-                    )}
-                  </td>
-
-                  <td>
-                    {isEditing ? (
-                      <input
-                        className="table-input"
-                        value={editValues.client}
-                        onChange={(e) => handleFieldChange("client", e.target.value)}
-                      />
-                    ) : (
-                      project.client
-                    )}
-                  </td>
-
-                  <td>
-                    {isEditing ? (
-                      <input
-                        className="table-input"
-                        value={editValues.product}
-                        onChange={(e) => handleFieldChange("product", e.target.value)}
-                      />
-                    ) : (
-                      project.product
-                    )}
-                  </td>
-
-                  <td>
-                    {isEditing ? (
-                      <input
-                        className="table-input"
-                        value={editValues.jobType}
-                        onChange={(e) => handleFieldChange("jobType", e.target.value)}
-                      />
-                    ) : (
-                      project.jobType
-                    )}
-                  </td>
-
-                  <td>
-                    {isEditing ? (
-                      <input
-                        className="table-input"
-                        type="number"
-                        value={editValues.hours}
-                        onChange={(e) => handleFieldChange("hours", e.target.value)}
-                      />
-                    ) : (
-                      project.hours || "—"
-                    )}
-                  </td>
-
-                  <td>
-                    {isEditing ? (
-                      <input
-                        className="table-input"
-                        value={editValues.web}
-                        onChange={(e) => handleFieldChange("web", e.target.value)}
-                      />
-                    ) : (
-                      project.web
-                    )}
-                  </td>
-
-                  <td>
-                    {isEditing ? (
-                      <select
-                        className="table-input"
-                        value={editValues.status}
-                        onChange={(e) => handleFieldChange("status", e.target.value)}
-                      >
+                      <select className="table-input" value={editValues.status} onChange={(e) => handleFieldChange("status", e.target.value)}>
                         <option>Delivered</option>
                         <option>In Progress</option>
                         <option>Pending Approval</option>
@@ -175,41 +106,29 @@ export default function ProjectTable() {
                       project.status
                     )}
                   </td>
-
                   <td>
                     {isEditing ? (
-                      <select
-                        className="table-input"
-                        value={editValues.timesheet}
-                        onChange={(e) => handleFieldChange("timesheet", e.target.value)}
-                      >
+                      <select className="table-input" value={editValues.timesheet} onChange={(e) => handleFieldChange("timesheet", e.target.value)}>
                         <option>Delivered</option>
-                        <option>—</option>
+                        <option>-</option>
                         <option>Pending</option>
+                        <option>Not Submitted</option>
                       </select>
                     ) : (
                       project.timesheet
                     )}
                   </td>
-
+                  {showAssignedTo && <td>{project.user?.name || "-"}</td>}
                   <td className="table-actions">
                     {isEditing ? (
                       <>
-                        <button onClick={saveEdit} className="btn btn-small btn-primary">
-                          Save
-                        </button>
-                        <button onClick={cancelEdit} className="btn btn-small btn-ghost">
-                          Cancel
-                        </button>
+                        <button onClick={saveEdit} className="btn btn-small btn-primary">Save</button>
+                        <button onClick={cancelEdit} className="btn btn-small btn-ghost">Cancel</button>
                       </>
                     ) : (
                       <>
-                        <button onClick={() => startEdit(project)} className="btn btn-small btn-secondary">
-                          Edit
-                        </button>
-                        <button onClick={() => dispatch(deleteProject(project._id))} className="btn btn-small btn-danger">
-                          Delete
-                        </button>
+                        <button onClick={() => startEdit(project)} className="btn btn-small btn-secondary">Edit</button>
+                        <button onClick={() => dispatch(deleteProject(project._id))} className="btn btn-small btn-danger">Delete</button>
                       </>
                     )}
                   </td>

@@ -38,7 +38,8 @@ export const getProjects = async (req, res) => {
     let query = { user: req.user.id };
 
     if (req.user.role === "manager") {
-      query = { assignedBy: req.user.id };
+      const employees = await User.find({ role: "employee" }).select("_id");
+      query = { user: { $in: employees.map((employee) => employee._id) } };
     }
 
     const projects = await Project.find(query)
@@ -61,9 +62,9 @@ export const updateProject = async (req, res) => {
     }
 
     const isOwner = project.user.toString() === req.user.id;
-    const isAssigningManager = project.assignedBy?.toString() === req.user.id;
+    const isManager = req.user.role === "manager";
 
-    if (!isOwner && !isAssigningManager) {
+    if (!isOwner && !isManager) {
       return res.status(401).json({ message: "Not authorized" });
     }
 
@@ -88,9 +89,9 @@ export const deleteProject = async (req, res) => {
     }
 
     const isOwner = project.user.toString() === req.user.id;
-    const isAssigningManager = project.assignedBy?.toString() === req.user.id;
+    const isManager = req.user.role === "manager";
 
-    if (!isOwner && !isAssigningManager) {
+    if (!isOwner && !isManager) {
       return res.status(401).json({ message: "Not authorized" });
     }
 

@@ -12,6 +12,7 @@ export default function ProjectTable() {
   const user = useSelector((state) => state.auth.user);
 
   const showAssignedTo = ["admin", "manager"].includes(user?.role);
+  const canManageProjects = ["admin", "manager"].includes(user?.role);
   const filterFields = {
     f1: "Project",
     f2: "Client",
@@ -84,7 +85,7 @@ export default function ProjectTable() {
             <th>Status</th>
             <th>Timesheet</th>
             {showAssignedTo && <th>Assigned To</th>}
-            <th>Actions</th>
+            {canManageProjects && <th>Actions</th>}
           </tr>
           {filtersVisible && (
             <tr className="filter-row">
@@ -98,7 +99,7 @@ export default function ProjectTable() {
               <th><input className="filter-input" value={filters.f7 || ""} placeholder={filterFields.f7} onChange={(e) => updateFilter("f7", e.target.value)} /></th>
               <th><input className="filter-input" value={filters.f8 || ""} placeholder={filterFields.f8} onChange={(e) => updateFilter("f8", e.target.value)} /></th>
               {showAssignedTo && <th></th>}
-              <th></th>
+              {canManageProjects && <th></th>}
             </tr>
           )}
         </thead>
@@ -106,7 +107,7 @@ export default function ProjectTable() {
         <tbody>
           {filteredProjects.length === 0 ? (
             <tr>
-              <td colSpan={showAssignedTo ? "11" : "10"} style={{ textAlign: "center" }}>
+              <td colSpan={(showAssignedTo ? 10 : 9) + (canManageProjects ? 1 : 0)} style={{ textAlign: "center" }}>
                 No Projects Found
               </td>
             </tr>
@@ -148,19 +149,21 @@ export default function ProjectTable() {
                     )}
                   </td>
                   {showAssignedTo && <td>{project.user?.name || "-"}</td>}
-                  <td className="table-actions">
-                    {isEditing ? (
-                      <>
-                        <button onClick={saveEdit} className="btn btn-small btn-primary">Save</button>
-                        <button onClick={cancelEdit} className="btn btn-small btn-ghost">Cancel</button>
-                      </>
-                    ) : (
-                      <>
-                        <button onClick={() => startEdit(project)} className="btn btn-small btn-secondary">Edit</button>
-                        <button onClick={() => dispatch(deleteProject(project._id))} className="btn btn-small btn-danger">Delete</button>
-                      </>
-                    )}
-                  </td>
+                  {canManageProjects && (
+                    <td className="table-actions">
+                      {isEditing ? (
+                        <>
+                          <button onClick={saveEdit} className="btn btn-small btn-primary">Save</button>
+                          <button onClick={cancelEdit} className="btn btn-small btn-ghost">Cancel</button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => startEdit(project)} className="btn btn-small btn-secondary">Edit</button>
+                          <button onClick={() => dispatch(deleteProject(project._id))} className="btn btn-small btn-danger">Delete</button>
+                        </>
+                      )}
+                    </td>
+                  )}
                 </tr>
               );
             })

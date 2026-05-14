@@ -80,7 +80,6 @@ export const updateProject = async (req, res) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    const isOwner = project.user.toString() === req.user.id;
     const isAdmin = req.user.role === "admin";
     const managerEmployeeIds =
       req.user.role === "manager" ? await getManagerEmployeeIds(req.user._id) : [];
@@ -88,7 +87,7 @@ export const updateProject = async (req, res) => {
       (employeeId) => employeeId.toString() === project.user.toString()
     );
 
-    if (!isOwner && !isAdmin && !isTeamManager) {
+    if (!isAdmin && !isTeamManager) {
       return res.status(401).json({ message: "Not authorized" });
     }
 
@@ -112,7 +111,6 @@ export const deleteProject = async (req, res) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    const isOwner = project.user.toString() === req.user.id;
     const isAdmin = req.user.role === "admin";
     const managerEmployeeIds =
       req.user.role === "manager" ? await getManagerEmployeeIds(req.user._id) : [];
@@ -120,7 +118,7 @@ export const deleteProject = async (req, res) => {
       (employeeId) => employeeId.toString() === project.user.toString()
     );
 
-    if (!isOwner && !isAdmin && !isTeamManager) {
+    if (!isAdmin && !isTeamManager) {
       return res.status(401).json({ message: "Not authorized" });
     }
 

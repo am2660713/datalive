@@ -823,6 +823,29 @@ td select {
   font-weight: 700;
 }
 
+.reset-code-box {
+  align-items: center;
+  background: #eef6ff;
+  border: 1px solid rgba(63, 125, 243, 0.28);
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.reset-code-box span {
+  color: #5b739f;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.reset-code-box strong {
+  color: #1c3b76;
+  font-size: 22px;
+  letter-spacing: 0.18em;
+}
+
 .daily-shell {
   display: flex;
   flex-direction: column;

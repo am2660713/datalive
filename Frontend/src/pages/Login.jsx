@@ -21,6 +21,7 @@ export default function Login() {
     newPassword: "",
   });
   const [forgotMessage, setForgotMessage] = useState("");
+  const [visibleResetCode, setVisibleResetCode] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -67,6 +68,7 @@ useEffect(() => {
     try {
       const result = await authService.forgotPassword(forgotForm.email);
       setForgotForm((prev) => ({ ...prev, resetCode: result.resetCode || "" }));
+      setVisibleResetCode(result.resetCode || "");
       setForgotMessage(
         result.resetCode
           ? `Reset code: ${result.resetCode}. Enter a new password below.`
@@ -88,6 +90,7 @@ useEffect(() => {
       setForgotMessage(result.message || "Password reset successfully.");
       setPassword("");
       setForgotForm({ email: "", resetCode: "", newPassword: "" });
+      setVisibleResetCode("");
     } catch (error) {
       setForgotMessage(error.response?.data?.message || "Unable to reset password.");
     }
@@ -152,6 +155,7 @@ useEffect(() => {
                 setForgotOpen(true);
                 setForgotForm((prev) => ({ ...prev, email: email || prev.email }));
                 setForgotMessage("");
+                setVisibleResetCode("");
               }}
             >
               Forgot password?
@@ -197,6 +201,12 @@ useEffect(() => {
             <button type="button" className="ribbon-btn active" onClick={requestResetCode}>
               Get Reset Code
             </button>
+            {visibleResetCode && (
+              <div className="reset-code-box">
+                <span>Your reset code</span>
+                <strong>{visibleResetCode}</strong>
+              </div>
+            )}
             <input
               type="text"
               placeholder="Reset code"

@@ -7,6 +7,7 @@ import {
   isApprovedAdminEmail,
   isApprovedManagerEmail,
 } from "../utils/roles.js";
+import { sendPasswordResetEmail } from "../utils/email.js";
 
 export const loginUser = async (req, res) => {
   try {
@@ -251,10 +252,14 @@ export const forgotPassword = async (req, res) => {
     user.resetPasswordCode = await bcrypt.hash(resetCode, 10);
     user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
+    await sendPasswordResetEmail({
+      email: user.email,
+      name: user.name,
+      resetCode,
+    });
 
     res.json({
-      message: "Use this reset code to set a new password.",
-      resetCode,
+      message: "Reset code sent to your email.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

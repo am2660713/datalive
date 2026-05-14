@@ -26,17 +26,10 @@ CLIENT_ORIGIN=https://your-site-name.netlify.app
 ADMIN_EMAILS=admin@example.com
 MANAGER_EMAILS=manager@example.com
 MANAGER_INVITE_CODE=private-code-for-manager-creation
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_SECURE=true
-SMTP_USER=your sending email address
-SMTP_PASS=your email app password
-MAIL_FROM=your sending email address
 ```
 
 `ADMIN_EMAILS` controls who gets admin access. Add only trusted admin email addresses, separated by commas.
 `MANAGER_EMAILS` is required for manager permissions. Add only trusted manager email addresses, separated by commas.
-SMTP values are required for Forgot Password emails. For Gmail, use an App Password, not your normal Gmail password.
 
 After deploy, Render gives a free URL like:
 

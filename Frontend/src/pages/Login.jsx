@@ -66,7 +66,12 @@ useEffect(() => {
 
     try {
       const result = await authService.forgotPassword(forgotForm.email);
-      setForgotMessage(result.message || "Reset code sent to your email.");
+      setForgotForm((prev) => ({ ...prev, resetCode: result.resetCode || "" }));
+      setForgotMessage(
+        result.resetCode
+          ? `Reset code: ${result.resetCode}. Enter a new password below.`
+          : result.message
+      );
     } catch (error) {
       setForgotMessage(error.response?.data?.message || "Unable to create reset code.");
     }

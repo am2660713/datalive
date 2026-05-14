@@ -9,7 +9,6 @@ export default function Ribbon() {
     filtersVisible,
     searchQuery,
     setSearchQuery,
-    clearFilters,
     summary,
     openAddProject,
   } = useAppContext();
@@ -39,10 +38,6 @@ export default function Ribbon() {
         onClick={toggleFilters}
       >
         Filters
-      </button>
-
-      <button className="ribbon-btn" onClick={clearFilters}>
-        Clear Filters
       </button>
 
       <div className="ribbon-sep"></div>

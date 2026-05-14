@@ -5,6 +5,7 @@ import ProjectTable from "../components/ProjectTable";
 import DailyTable from "../components/DailyTable";
 import YearlyTable from "../components/YearlyTable";
 import Modal from "../components/Modal";
+import ProjectCharts from "../components/ProjectCharts";
 import { useAppContext } from "../context/AppContext";
 import { useDispatch, useSelector } from "react-redux";
 import { getEmployees, getProjects } from "../features/projects/projectSlice";
@@ -54,22 +55,7 @@ export default function Dashboard() {
       <div className={`page ${activeSheet === "projects" ? "active" : ""}`} id="page-projects">
         <SummaryCards />
         <ProjectTable />
-        <div id="chartsArea" style={{ display: chartsVisible ? "block" : "none" }}>
-          <div className="chart-area">
-            <div className="chart-box">
-              <div className="chart-title">Hours by Client</div>
-              <div className="chart-wrap" style={{ height: 220 }}>
-                <canvas id="chartClients" role="img" aria-label="Bar chart of total hours by client"></canvas>
-              </div>
-            </div>
-            <div className="chart-box">
-              <div className="chart-title">Project Status Distribution</div>
-              <div className="chart-wrap" style={{ height: 220 }}>
-                <canvas id="chartStatus" role="img" aria-label="Doughnut chart of project statuses"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
+        {chartsVisible && <ProjectCharts />}
       </div>
 
       <div className={`page ${activeSheet === "daily" ? "active" : ""}`} id="page-daily">

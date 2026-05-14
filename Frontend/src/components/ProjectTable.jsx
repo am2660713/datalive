@@ -8,10 +8,23 @@ export default function ProjectTable() {
   const [editingId, setEditingId] = useState(null);
   const [editValues, setEditValues] = useState({});
 
-  const { filteredProjects } = useAppContext();
+  const { filteredProjects, filters, filtersVisible, setFilters } = useAppContext();
   const user = useSelector((state) => state.auth.user);
 
   const showAssignedTo = user?.role === "manager";
+  const filterFields = {
+    f1: "Project",
+    f2: "Client",
+    f3: "Product",
+    f4: "Job type",
+    f6: "WEB",
+    f7: "Status",
+    f8: "Timesheet",
+  };
+
+  const updateFilter = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   const startEdit = (project) => {
     setEditingId(project._id);
@@ -73,6 +86,21 @@ export default function ProjectTable() {
             {showAssignedTo && <th>Assigned To</th>}
             <th>Actions</th>
           </tr>
+          {filtersVisible && (
+            <tr className="filter-row">
+              <th></th>
+              <th><input className="filter-input" value={filters.f1 || ""} placeholder={filterFields.f1} onChange={(e) => updateFilter("f1", e.target.value)} /></th>
+              <th><input className="filter-input" value={filters.f2 || ""} placeholder={filterFields.f2} onChange={(e) => updateFilter("f2", e.target.value)} /></th>
+              <th><input className="filter-input" value={filters.f3 || ""} placeholder={filterFields.f3} onChange={(e) => updateFilter("f3", e.target.value)} /></th>
+              <th><input className="filter-input" value={filters.f4 || ""} placeholder={filterFields.f4} onChange={(e) => updateFilter("f4", e.target.value)} /></th>
+              <th></th>
+              <th><input className="filter-input" value={filters.f6 || ""} placeholder={filterFields.f6} onChange={(e) => updateFilter("f6", e.target.value)} /></th>
+              <th><input className="filter-input" value={filters.f7 || ""} placeholder={filterFields.f7} onChange={(e) => updateFilter("f7", e.target.value)} /></th>
+              <th><input className="filter-input" value={filters.f8 || ""} placeholder={filterFields.f8} onChange={(e) => updateFilter("f8", e.target.value)} /></th>
+              {showAssignedTo && <th></th>}
+              <th></th>
+            </tr>
+          )}
         </thead>
 
         <tbody>

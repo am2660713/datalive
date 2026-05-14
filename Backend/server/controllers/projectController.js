@@ -11,28 +11,30 @@ export const createProject = async (req, res) => {
   try {
     const { assigneeId, ...projectPayload } = req.body;
 
+    if (!["admin", "manager"].includes(req.user.role)) {
+      return res.status(403).json({ message: "Only admins and managers can create projects" });
+    }
+
     let projectOwnerId = req.user.id;
     let assignedBy = null;
 
-    if (["admin", "manager"].includes(req.user.role)) {
-      if (!assigneeId) {
-        return res.status(400).json({ message: "Please select an employee" });
-      }
-
-      const employee = await User.findOne({
-        $and: [{ _id: assigneeId }, { _id: { $ne: req.user._id } }],
-      });
-      if (!employee || getEffectiveRole(employee) !== "employee") {
-        return res.status(400).json({ message: "Selected employee not found" });
-      }
-
-      if (req.user.role === "manager" && employee.manager?.toString() !== req.user.id) {
-        return res.status(403).json({ message: "Employee is not assigned to this manager" });
-      }
-
-      projectOwnerId = employee._id;
-      assignedBy = req.user.id;
+    if (!assigneeId) {
+      return res.status(400).json({ message: "Please select an employee" });
     }
+
+    const employee = await User.findOne({
+      $and: [{ _id: assigneeId }, { _id: { $ne: req.user._id } }],
+    });
+    if (!employee || getEffectiveRole(employee) !== "employee") {
+      return res.status(400).json({ message: "Selected employee not found" });
+    }
+
+    if (req.user.role === "manager" && employee.manager?.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Employee is not assigned to this manager" });
+    }
+
+    projectOwnerId = employee._id;
+    assignedBy = req.user.id;
 
     const project = await Project.create({
       ...projectPayload,

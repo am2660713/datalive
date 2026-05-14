@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import { useAppContext } from "../context/AppContext";
 
 export default function Ribbon() {
@@ -12,6 +13,8 @@ export default function Ribbon() {
     summary,
     openAddProject,
   } = useAppContext();
+  const user = useSelector((state) => state.auth.user);
+  const canCreateProjects = ["admin", "manager"].includes(user?.role);
 
   return (
     <div className="ribbon">
@@ -21,11 +24,15 @@ export default function Ribbon() {
 
       <div className="ribbon-sep"></div>
 
-      <button className="ribbon-btn active" onClick={openAddProject}>
-        Add Project
-      </button>
+      {canCreateProjects && (
+        <>
+          <button className="ribbon-btn active" onClick={openAddProject}>
+            Add Project
+          </button>
 
-      <div className="ribbon-sep"></div>
+          <div className="ribbon-sep"></div>
+        </>
+      )}
 
       <button
         className={`ribbon-btn ${filtersVisible ? "active" : ""}`}

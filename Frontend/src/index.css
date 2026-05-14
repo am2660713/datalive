@@ -748,6 +748,40 @@ td select {
   justify-content: center;
 }
 
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-panel-header {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(98, 139, 234, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 14px 32px rgba(14, 36, 78, 0.1);
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  padding: 18px 20px;
+}
+
+.admin-panel-header h2 {
+  color: #1c3b76;
+  font-size: 22px;
+  margin: 4px 0 0;
+}
+
+.admin-panel-header p {
+  color: #5b739f;
+  font-size: 13px;
+  max-width: 520px;
+}
+
+.admin-table-container {
+  max-height: calc(100vh - 235px);
+}
+
 .daily-shell {
   display: flex;
   flex-direction: column;

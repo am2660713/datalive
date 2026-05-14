@@ -1,7 +1,11 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { getEffectiveRole, isApprovedManagerEmail } from "../utils/roles.js";
+import {
+  getEffectiveRole,
+  isApprovedAdminEmail,
+  isApprovedManagerEmail,
+} from "../utils/roles.js";
 
 export const loginUser = async (req, res) => {
   try {
@@ -54,13 +58,18 @@ export const registerUser = async (req, res) => {
         .json({ message: "Password must be at least 6 characters" });
     }
 
-    const normalizedRole =
+    let normalizedRole = "employee";
+
+    if (isApprovedAdminEmail(email)) {
+      normalizedRole = "admin";
+    } else if (
       role === "manager" &&
       process.env.MANAGER_INVITE_CODE &&
       managerInviteCode === process.env.MANAGER_INVITE_CODE &&
       isApprovedManagerEmail(email)
-        ? "manager"
-        : "employee";
+    ) {
+      normalizedRole = "manager";
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -98,12 +107,18 @@ export const registerUser = async (req, res) => {
 
 export const getEmployees = async (req, res) => {
   try {
-    if (req.user.role !== "manager") {
-      return res.status(403).json({ message: "Only managers can view employees" });
+    if (!["admin", "manager"].includes(req.user.role)) {
+      return res.status(403).json({ message: "Only admins and managers can view employees" });
     }
 
-    const employees = await User.find({ _id: { $ne: req.user._id } })
-      .select("_id name email role")
+    const query =
+      req.user.role === "admin"
+        ? { _id: { $ne: req.user._id } }
+        : { manager: req.user._id };
+
+    const employees = await User.find(query)
+      .select("_id name email role manager")
+      .populate("manager", "name email role")
       .sort({ name: 1 });
 
     res.json(
@@ -111,9 +126,76 @@ export const getEmployees = async (req, res) => {
         _id: employee._id,
         name: employee.name,
         email: employee.email,
-        role: employee.role || "employee",
+        role: getEffectiveRole(employee),
+        manager: employee.manager,
       }))
     );
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getManagers = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Only admins can view managers" });
+    }
+
+    const users = await User.find({ _id: { $ne: req.user._id } })
+      .select("_id name email role")
+      .sort({ name: 1 });
+
+    const managers = users
+      .map((user) => ({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: getEffectiveRole(user),
+      }))
+      .filter((user) => user.role === "manager");
+
+    res.json(managers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const assignEmployeeManager = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Only admins can assign managers" });
+    }
+
+    const { employeeId, managerId } = req.body;
+
+    if (!employeeId) {
+      return res.status(400).json({ message: "Employee is required" });
+    }
+
+    const employee = await User.findById(employeeId);
+    if (!employee || getEffectiveRole(employee) !== "employee") {
+      return res.status(400).json({ message: "Selected employee not found" });
+    }
+
+    let manager = null;
+    if (managerId) {
+      manager = await User.findById(managerId);
+      if (!manager || getEffectiveRole(manager) !== "manager") {
+        return res.status(400).json({ message: "Selected manager not found" });
+      }
+    }
+
+    employee.manager = manager ? manager._id : null;
+    await employee.save();
+    await employee.populate("manager", "name email role");
+
+    res.json({
+      _id: employee._id,
+      name: employee.name,
+      email: employee.email,
+      role: getEffectiveRole(employee),
+      manager: employee.manager,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

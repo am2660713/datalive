@@ -36,6 +36,30 @@ const getEmployees = async (token) => {
   return res.data;
 };
 
+const getManagers = async (token) => {
+  const res = await axios.get(`${AUTH_URL}/managers`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
+const assignEmployeeManager = async (employeeId, managerId, token) => {
+  const res = await axios.put(
+    `${AUTH_URL}/employees/${employeeId}/manager`,
+    { employeeId, managerId },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+
 const updateProject = async (id, data, token) => {
   const res = await axios.put(`${API_URL}/${id}`, data, {
     headers: {
@@ -60,6 +84,8 @@ export default {
   createProject,
   getProjects,
   getEmployees,
+  getManagers,
+  assignEmployeeManager,
   updateProject,
   deleteProject,
 };

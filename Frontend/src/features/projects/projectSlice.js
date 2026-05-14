@@ -4,6 +4,7 @@ import projectService from "./projectService";
 const initialState = {
   projects: [],
   employees: [],
+  managers: [],
   isLoading: false,
   isError: false,
   message: "",
@@ -39,6 +40,30 @@ export const getEmployees = createAsyncThunk(
     try {
       const token = thunkAPI.getState().auth.token;
       return await projectService.getEmployees(token);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data?.message);
+    }
+  }
+);
+
+export const getManagers = createAsyncThunk(
+  "projects/getManagers",
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.token;
+      return await projectService.getManagers(token);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data?.message);
+    }
+  }
+);
+
+export const assignEmployeeManager = createAsyncThunk(
+  "projects/assignEmployeeManager",
+  async ({ employeeId, managerId }, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.token;
+      return await projectService.assignEmployeeManager(employeeId, managerId, token);
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message);
     }
@@ -84,6 +109,14 @@ const projectSlice = createSlice({
       })
       .addCase(getEmployees.fulfilled, (state, action) => {
         state.employees = action.payload;
+      })
+      .addCase(getManagers.fulfilled, (state, action) => {
+        state.managers = action.payload;
+      })
+      .addCase(assignEmployeeManager.fulfilled, (state, action) => {
+        state.employees = state.employees.map((employee) =>
+          employee._id === action.payload._id ? action.payload : employee
+        );
       })
       .addCase(updateProject.fulfilled, (state, action) => {
         state.projects = state.projects.map((p) =>

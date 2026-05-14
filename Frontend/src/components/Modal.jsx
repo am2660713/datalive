@@ -8,13 +8,13 @@ export default function Modal() {
   const { modalOpen, closeModal, modalValues, setModalValues } = useAppContext();
   const user = useSelector((state) => state.auth.user);
   const employees = useSelector((state) => state.projects.employees);
-  const isManager = user?.role === "manager";
+  const canAssignProject = ["admin", "manager"].includes(user?.role);
 
   useEffect(() => {
-    if (modalOpen && isManager) {
+    if (modalOpen && canAssignProject) {
       dispatch(getEmployees());
     }
-  }, [dispatch, isManager, modalOpen]);
+  }, [canAssignProject, dispatch, modalOpen]);
 
   if (!modalOpen) return null;
 
@@ -24,7 +24,7 @@ export default function Modal() {
       return;
     }
 
-    if (isManager && !modalValues.assigneeId) {
+    if (canAssignProject && !modalValues.assigneeId) {
       alert("Please select an employee");
       return;
     }
@@ -33,7 +33,7 @@ export default function Modal() {
       await dispatch(
         createProject({
           ...modalValues,
-          assigneeId: isManager ? modalValues.assigneeId : undefined,
+          assigneeId: canAssignProject ? modalValues.assigneeId : undefined,
           status: modalValues.status || "Delivered",
           timesheet: modalValues.timesheet || "Delivered",
           hours: Number(modalValues.hours) || 0,
@@ -58,7 +58,7 @@ export default function Modal() {
         <h3>{modalValues.name ? "Edit Project" : "Add Project"}</h3>
 
         <div className="grid">
-          {isManager && (
+          {canAssignProject && (
             <select
               value={modalValues.assigneeId || ""}
               onChange={(e) =>

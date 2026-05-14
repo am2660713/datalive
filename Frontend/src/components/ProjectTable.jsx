@@ -11,7 +11,7 @@ export default function ProjectTable() {
   const { filteredProjects, filters, filtersVisible, setFilters } = useAppContext();
   const user = useSelector((state) => state.auth.user);
 
-  const showAssignedTo = user?.role === "manager";
+  const showAssignedTo = ["admin", "manager"].includes(user?.role);
   const filterFields = {
     f1: "Project",
     f2: "Client",

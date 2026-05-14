@@ -6,7 +6,8 @@ export default function Topbar() {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const roleLabel = user?.role === "manager" ? "Manager" : "Employee";
+  const roleLabel =
+    user?.role === "admin" ? "Admin" : user?.role === "manager" ? "Manager" : "Employee";
 
   const handleLogout = async () => {
     await dispatch(logout());

@@ -6,9 +6,10 @@ import DailyTable from "../components/DailyTable";
 import YearlyTable from "../components/YearlyTable";
 import Modal from "../components/Modal";
 import ProjectCharts from "../components/ProjectCharts";
+import AdminPanel from "../components/AdminPanel";
 import { useAppContext } from "../context/AppContext";
 import { useDispatch, useSelector } from "react-redux";
-import { getEmployees, getProjects } from "../features/projects/projectSlice";
+import { getEmployees, getManagers, getProjects } from "../features/projects/projectSlice";
 import { useEffect } from "react";
 
 export default function Dashboard() {
@@ -20,8 +21,11 @@ export default function Dashboard() {
   useEffect(() => {
     if (token) {
       dispatch(getProjects());
-      if (user?.role === "manager") {
+      if (["admin", "manager"].includes(user?.role)) {
         dispatch(getEmployees());
+      }
+      if (user?.role === "admin") {
+        dispatch(getManagers());
       }
     }
   }, [dispatch, token, user?.role]);
@@ -50,6 +54,14 @@ export default function Dashboard() {
         >
           Yearly Summary
         </div>
+        {user?.role === "admin" && (
+          <div
+            className={`sheet-tab ${activeSheet === "admin" ? "active" : ""}`}
+            onClick={() => switchSheet("admin")}
+          >
+            Admin
+          </div>
+        )}
       </div>
 
       <div className={`page ${activeSheet === "projects" ? "active" : ""}`} id="page-projects">
@@ -66,11 +78,15 @@ export default function Dashboard() {
         <YearlyTable />
       </div>
 
+      <div className={`page ${activeSheet === "admin" ? "active" : ""}`} id="page-admin">
+        <AdminPanel />
+      </div>
+
       <Modal />
 
       <div className="status-bar">
         <span id="sbSheet">
-          Sheet: {activeSheet === "projects" ? "Project Tracking" : activeSheet === "daily" ? "Daily Status Report" : "Yearly Summary"}
+          Sheet: {activeSheet === "projects" ? "Project Tracking" : activeSheet === "daily" ? "Daily Status Report" : activeSheet === "admin" ? "Admin" : "Yearly Summary"}
         </span>
         <span id="sbRows">Rows: {summary.total}</span>
         <span>A.Y. 2026</span>

@@ -46,10 +46,21 @@ const logout = async () => {
   return true;
 };
 
+const changePassword = async (passwordData, token) => {
+  const response = await authClient.put("/auth/change-password", passwordData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
 const authService = {
   register,
   login,
   logout,
+  changePassword,
 };
 
 export default authService;

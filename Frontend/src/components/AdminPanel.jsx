@@ -20,6 +20,29 @@ export default function AdminPanel() {
         <p>Assign employees to managers so each manager only sees their own team.</p>
       </div>
 
+      <div className="admin-stat-grid">
+        <div className="stat-card">
+          <div className="stat-val">{managers.length}</div>
+          <div className="stat-lbl">Managers</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-val">{assignableEmployees.length}</div>
+          <div className="stat-lbl">Employees</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-val">
+            {assignableEmployees.filter((employee) => employee.manager?._id).length}
+          </div>
+          <div className="stat-lbl">Assigned</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-val">
+            {assignableEmployees.filter((employee) => !employee.manager?._id).length}
+          </div>
+          <div className="stat-lbl">Unassigned</div>
+        </div>
+      </div>
+
       <div className="table-container admin-table-container">
         <table>
           <thead>

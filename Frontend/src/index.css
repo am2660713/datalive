@@ -754,6 +754,12 @@ td select {
   gap: 14px;
 }
 
+.admin-stat-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
 .admin-panel-header {
   align-items: center;
   background: rgba(255, 255, 255, 0.96);
@@ -780,6 +786,26 @@ td select {
 
 .admin-table-container {
   max-height: calc(100vh - 235px);
+}
+
+.password-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.password-panel input {
+  border: 1px solid rgba(173, 189, 219, 0.8);
+  border-radius: 10px;
+  color: #203556;
+  font-size: 13px;
+  min-height: 42px;
+  padding: 8px 10px;
+}
+
+.password-message {
+  color: #1c3b76;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .daily-shell {

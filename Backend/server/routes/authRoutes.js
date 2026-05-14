@@ -1,6 +1,7 @@
 import express from "express";
 import {
   assignEmployeeManager,
+  changePassword,
   getEmployees,
   getManagers,
   loginUser,
@@ -15,5 +16,6 @@ router.post("/register", registerUser);
 router.get("/employees", protect, getEmployees);
 router.get("/managers", protect, getManagers);
 router.put("/employees/:id/manager", protect, assignEmployeeManager);
+router.put("/change-password", protect, changePassword);
 
 export default router;

@@ -85,6 +85,7 @@ export default function ProjectTable() {
             <th>Status</th>
             <th>Timesheet</th>
             {showAssignedTo && <th>Assigned To</th>}
+            {showAssignedTo && <th>Assigned By</th>}
             {canManageProjects && <th>Actions</th>}
           </tr>
           {filtersVisible && (
@@ -99,6 +100,7 @@ export default function ProjectTable() {
               <th><input className="filter-input" value={filters.f7 || ""} placeholder={filterFields.f7} onChange={(e) => updateFilter("f7", e.target.value)} /></th>
               <th><input className="filter-input" value={filters.f8 || ""} placeholder={filterFields.f8} onChange={(e) => updateFilter("f8", e.target.value)} /></th>
               {showAssignedTo && <th></th>}
+              {showAssignedTo && <th></th>}
               {canManageProjects && <th></th>}
             </tr>
           )}
@@ -107,7 +109,7 @@ export default function ProjectTable() {
         <tbody>
           {filteredProjects.length === 0 ? (
             <tr>
-              <td colSpan={(showAssignedTo ? 10 : 9) + (canManageProjects ? 1 : 0)} style={{ textAlign: "center" }}>
+              <td colSpan={(showAssignedTo ? 11 : 9) + (canManageProjects ? 1 : 0)} style={{ textAlign: "center" }}>
                 No Projects Found
               </td>
             </tr>
@@ -149,6 +151,7 @@ export default function ProjectTable() {
                     )}
                   </td>
                   {showAssignedTo && <td>{project.user?.name || "-"}</td>}
+                  {showAssignedTo && <td>{project.assignedBy?.name || "-"}</td>}
                   {canManageProjects && (
                     <td className="table-actions">
                       {isEditing ? (

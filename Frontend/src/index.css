@@ -846,6 +846,27 @@ td select {
   letter-spacing: 0.18em;
 }
 
+.modal-btn {
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  min-height: 34px;
+  padding: 8px 16px;
+}
+
+.modal-btn-primary {
+  background: linear-gradient(135deg, #2962ff, #00a6d6);
+  color: #ffffff;
+}
+
+.modal-btn-secondary {
+  background: #edf3ff;
+  border: 1px solid rgba(63, 125, 243, 0.28);
+  color: #1c3b76;
+}
+
 .daily-shell {
   display: flex;
   flex-direction: column;

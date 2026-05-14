@@ -225,10 +225,10 @@ useEffect(() => {
             />
             {forgotMessage && <p className="password-message">{forgotMessage}</p>}
             <div className="actions">
-              <button className="ribbon-btn" onClick={() => setForgotOpen(false)}>
+              <button className="modal-btn modal-btn-secondary" onClick={() => setForgotOpen(false)}>
                 Close
               </button>
-              <button className="ribbon-btn active" onClick={submitNewPassword}>
+              <button className="modal-btn modal-btn-primary" onClick={submitNewPassword}>
                 Reset Password
               </button>
             </div>

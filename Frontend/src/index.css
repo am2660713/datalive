@@ -115,6 +115,21 @@ body {
   font-weight: 800;
 }
 
+.forgot-link {
+  justify-self: end;
+  border: none;
+  background: transparent;
+  color: #1f5c99;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: -8px;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
 .primary-button {
   width: 100%;
   min-height: 46px;

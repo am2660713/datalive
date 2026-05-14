@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import {
   getEffectiveRole,
@@ -228,6 +229,71 @@ export const changePassword = async (req, res) => {
     await user.save();
 
     res.json({ message: "Password changed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "No account found" });
+    }
+
+    const resetCode = crypto.randomInt(100000, 999999).toString();
+    user.resetPasswordCode = await bcrypt.hash(resetCode, 10);
+    user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+
+    res.json({
+      message: "Use this reset code to set a new password.",
+      resetCode,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, resetCode, newPassword } = req.body;
+
+    if (!email || !resetCode || !newPassword) {
+      return res.status(400).json({ message: "Email, reset code, and new password are required" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: "New password must be at least 6 characters" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user || !user.resetPasswordCode || !user.resetPasswordExpires) {
+      return res.status(400).json({ message: "Invalid or expired reset code" });
+    }
+
+    if (user.resetPasswordExpires < new Date()) {
+      return res.status(400).json({ message: "Reset code expired" });
+    }
+
+    const isCodeValid = await bcrypt.compare(resetCode, user.resetPasswordCode);
+    if (!isCodeValid) {
+      return res.status(400).json({ message: "Invalid reset code" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    user.resetPasswordCode = "";
+    user.resetPasswordExpires = null;
+    await user.save();
+
+    res.json({ message: "Password reset successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

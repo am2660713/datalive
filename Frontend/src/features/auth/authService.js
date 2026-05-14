@@ -56,11 +56,23 @@ const changePassword = async (passwordData, token) => {
   return response.data;
 };
 
+const forgotPassword = async (email) => {
+  const response = await authClient.post("/auth/forgot-password", { email });
+  return response.data;
+};
+
+const resetPassword = async (data) => {
+  const response = await authClient.post("/auth/reset-password", data);
+  return response.data;
+};
+
 const authService = {
   register,
   login,
   logout,
   changePassword,
+  forgotPassword,
+  resetPassword,
 };
 
 export default authService;

@@ -4,6 +4,7 @@ import heroImage from "../assets/hero.png";
 
 import { useDispatch, useSelector } from "react-redux";
 import { login, reset } from "../features/auth/authSlice";
+import authService from "../features/auth/authService";
 
 function isEmailValid(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -13,6 +14,13 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [forgotForm, setForgotForm] = useState({
+    email: "",
+    resetCode: "",
+    newPassword: "",
+  });
+  const [forgotMessage, setForgotMessage] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -48,6 +56,41 @@ useEffect(() => {
     }
 
     dispatch(login({ email, password }));
+  };
+
+  const requestResetCode = async () => {
+    if (!forgotForm.email || !isEmailValid(forgotForm.email)) {
+      setForgotMessage("Please enter a valid email.");
+      return;
+    }
+
+    try {
+      const result = await authService.forgotPassword(forgotForm.email);
+      setForgotForm((prev) => ({ ...prev, resetCode: result.resetCode || "" }));
+      setForgotMessage(
+        result.resetCode
+          ? `Reset code: ${result.resetCode}. Enter a new password below.`
+          : result.message
+      );
+    } catch (error) {
+      setForgotMessage(error.response?.data?.message || "Unable to create reset code.");
+    }
+  };
+
+  const submitNewPassword = async () => {
+    if (!forgotForm.email || !forgotForm.resetCode || !forgotForm.newPassword) {
+      setForgotMessage("Email, reset code, and new password are required.");
+      return;
+    }
+
+    try {
+      const result = await authService.resetPassword(forgotForm);
+      setForgotMessage(result.message || "Password reset successfully.");
+      setPassword("");
+      setForgotForm({ email: "", resetCode: "", newPassword: "" });
+    } catch (error) {
+      setForgotMessage(error.response?.data?.message || "Unable to reset password.");
+    }
   };
 
   return (
@@ -102,6 +145,18 @@ useEffect(() => {
               </button>
             </div>
 
+            <button
+              type="button"
+              className="forgot-link"
+              onClick={() => {
+                setForgotOpen(true);
+                setForgotForm((prev) => ({ ...prev, email: email || prev.email }));
+                setForgotMessage("");
+              }}
+            >
+              Forgot password?
+            </button>
+
             {/* 🔴 Error Message */}
             {isError && (
               <div className="auth-alert">
@@ -126,6 +181,50 @@ useEffect(() => {
           </form>
         </div>
       </div>
+
+      {forgotOpen && (
+        <div className="modal" role="dialog" style={{ display: "flex" }}>
+          <div className="panel password-panel">
+            <h3>Reset Password</h3>
+            <input
+              type="email"
+              placeholder="Account email"
+              value={forgotForm.email}
+              onChange={(event) =>
+                setForgotForm((prev) => ({ ...prev, email: event.target.value }))
+              }
+            />
+            <button type="button" className="ribbon-btn active" onClick={requestResetCode}>
+              Get Reset Code
+            </button>
+            <input
+              type="text"
+              placeholder="Reset code"
+              value={forgotForm.resetCode}
+              onChange={(event) =>
+                setForgotForm((prev) => ({ ...prev, resetCode: event.target.value }))
+              }
+            />
+            <input
+              type="password"
+              placeholder="New password"
+              value={forgotForm.newPassword}
+              onChange={(event) =>
+                setForgotForm((prev) => ({ ...prev, newPassword: event.target.value }))
+              }
+            />
+            {forgotMessage && <p className="password-message">{forgotMessage}</p>}
+            <div className="actions">
+              <button className="ribbon-btn" onClick={() => setForgotOpen(false)}>
+                Close
+              </button>
+              <button className="ribbon-btn active" onClick={submitNewPassword}>
+                Reset Password
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

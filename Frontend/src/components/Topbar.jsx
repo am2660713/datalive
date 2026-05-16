@@ -16,20 +16,11 @@ export default function Topbar() {
 
   return (
     <div className="topbar">
-      <div className="topbar-logo">
-        <svg viewBox="0 0 24 24" fill="white" aria-hidden="true">
-          <rect x="3" y="3" width="8" height="8" rx="1" />
-          <rect x="13" y="3" width="8" height="8" rx="1" />
-          <rect x="3" y="13" width="8" height="8" rx="1" />
-          <rect x="13" y="13" width="8" height="8" rx="1" />
-        </svg>
-        <div className="topbar-logo-text">
-          <span className="logo-brand">ICT Solutions Pvt Ltd</span>
-          <span className="logo-subtitle">Project Data 2026</span>
-        </div>
+      <div className="topbar-welcome">
+        <span>Workspace</span>
+        <strong>Welcome, {user?.name || "Guest"}</strong>
       </div>
       <div className="topbar-user">
-        <span>{user?.name || "Guest"}</span>
         {user && <span className="role-badge">{roleLabel}</span>}
         {user ? (
           <button onClick={handleLogout} className="btn btn-ghost btn-small">

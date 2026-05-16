@@ -53,7 +53,8 @@ export const createProject = async (req, res) => {
 
     const populatedProject = await Project.findById(project._id)
       .populate("user", "name email role")
-      .populate("assignedBy", "name email role");
+      .populate("assignedBy", "name email role")
+      .populate("comments.author", "name email role");
 
     await writeActivity({
       action: "PROJECT_CREATED",
@@ -88,6 +89,7 @@ export const getProjects = async (req, res) => {
     const projects = await Project.find(query)
       .populate("user", "name email role")
       .populate("assignedBy", "name email role")
+      .populate("comments.author", "name email role")
       .sort({ createdAt: -1 });
 
     res.json(projects);
@@ -120,7 +122,8 @@ export const updateProject = async (req, res) => {
       new: true,
     })
       .populate("user", "name email role")
-      .populate("assignedBy", "name email role");
+      .populate("assignedBy", "name email role")
+      .populate("comments.author", "name email role");
 
     await writeActivity({
       action: "PROJECT_UPDATED",
@@ -175,6 +178,59 @@ export const deleteProject = async (req, res) => {
     });
 
     res.json({ message: "Project deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const addProjectComment = async (req, res) => {
+  try {
+    const { message } = req.body;
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    if (!message?.trim()) {
+      return res.status(400).json({ message: "Comment is required" });
+    }
+
+    const isAdmin = req.user.role === "admin";
+    const isOwner = project.user.toString() === req.user.id;
+    const managerEmployeeIds =
+      req.user.role === "manager" ? await getManagerEmployeeIds(req.user._id) : [];
+    const isTeamManager = managerEmployeeIds.some(
+      (employeeId) => employeeId.toString() === project.user.toString()
+    );
+
+    if (!isAdmin && !isOwner && !isTeamManager) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    project.comments.push({
+      message: message.trim(),
+      author: req.user._id,
+    });
+    await project.save();
+
+    await writeActivity({
+      action: "PROJECT_UPDATED",
+      message: `${req.user.name} commented on project "${project.name}"`,
+      actor: req.user._id,
+      project: project._id,
+      targetUser: project.user,
+      metadata: {
+        projectName: project.name,
+      },
+    });
+
+    const updated = await Project.findById(project._id)
+      .populate("user", "name email role")
+      .populate("assignedBy", "name email role")
+      .populate("comments.author", "name email role");
+
+    res.json(updated);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

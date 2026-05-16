@@ -9,6 +9,9 @@ import Modal from "../components/Modal";
 import ProjectCharts from "../components/ProjectCharts";
 import AdminPanel from "../components/AdminPanel";
 import ActivityLogPanel from "../components/ActivityLogPanel";
+import EmployeeDashboard from "../components/EmployeeDashboard";
+import NotificationsPanel from "../components/NotificationsPanel";
+import ReportsPanel from "../components/ReportsPanel";
 import { useAppContext } from "../context/AppContext";
 import { useDispatch, useSelector } from "react-redux";
 import { getActivityLogs, getEmployees, getManagers, getProjects } from "../features/projects/projectSlice";
@@ -62,6 +65,18 @@ export default function Dashboard() {
             <YearlyTable />
           </div>
 
+          <div className={`page ${activeSheet === "employee" ? "active" : ""}`} id="page-employee">
+            <EmployeeDashboard />
+          </div>
+
+          <div className={`page ${activeSheet === "notifications" ? "active" : ""}`} id="page-notifications">
+            <NotificationsPanel />
+          </div>
+
+          <div className={`page ${activeSheet === "reports" ? "active" : ""}`} id="page-reports">
+            <ReportsPanel />
+          </div>
+
           <div className={`page ${activeSheet === "admin" ? "active" : ""}`} id="page-admin">
             <AdminPanel />
           </div>
@@ -75,7 +90,7 @@ export default function Dashboard() {
 
         <div className="status-bar">
           <span id="sbSheet">
-            Sheet: {activeSheet === "projects" ? "Project Tracking" : activeSheet === "daily" ? "Daily Status Report" : activeSheet === "admin" ? "Admin" : activeSheet === "activity" ? "Activity Logs" : "Yearly Summary"}
+            Sheet: {activeSheet === "projects" ? "Project Tracking" : activeSheet === "daily" ? "Daily Status Report" : activeSheet === "admin" ? "Admin Settings" : activeSheet === "activity" ? "Activity Logs" : activeSheet === "employee" ? "My Work" : activeSheet === "notifications" ? "Notifications" : activeSheet === "reports" ? "Reports" : "Yearly Summary"}
           </span>
           <span id="sbRows">Rows: {summary.total}</span>
           <span style={{ flex: 1 }}></span>

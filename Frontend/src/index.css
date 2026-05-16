@@ -1410,6 +1410,95 @@ td select {
   font-size: 12px;
 }
 
+.employee-dashboard,
+.reports-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.report-grid h3 {
+  color: #17365f;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.project-comments {
+  display: grid;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.project-comments > strong {
+  color: #17365f;
+  font-size: 12px;
+}
+
+.comment-list {
+  display: grid;
+  gap: 6px;
+}
+
+.comment-list > span {
+  color: #6a7d9c;
+  font-size: 11px;
+}
+
+.comment-item {
+  border: 1px solid rgba(173, 198, 232, 0.44);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 8px 10px;
+}
+
+.comment-item p {
+  color: #17365f;
+  font-size: 11px;
+  margin: 0;
+}
+
+.comment-item small {
+  display: block;
+  color: #6a7d9c;
+  font-size: 9px;
+  margin-top: 4px;
+}
+
+.comment-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.comment-form input {
+  min-height: 32px;
+  border: 1px solid rgba(166, 185, 214, 0.88);
+  border-radius: 999px;
+  color: #17365f;
+  font-size: 11px;
+  padding: 6px 12px;
+}
+
+.notify-urgent {
+  background: #ffe4e6;
+  color: #b4232a;
+}
+
+.notify-warning {
+  background: #fff1d6;
+  color: #9a5b00;
+}
+
+.notify-priority {
+  background: #eaf2ff;
+  color: #1d4f99;
+}
+
 .daily-empty-state {
   padding: 34px 18px;
   text-align: center;

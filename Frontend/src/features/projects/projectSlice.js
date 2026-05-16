@@ -108,6 +108,18 @@ export const getActivityLogs = createAsyncThunk(
   }
 );
 
+export const addProjectComment = createAsyncThunk(
+  "projects/addComment",
+  async ({ id, message }, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.token;
+      return await projectService.addProjectComment(id, message, token);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data?.message);
+    }
+  }
+);
+
 const projectSlice = createSlice({
   name: "projects",
   initialState,
@@ -141,6 +153,11 @@ const projectSlice = createSlice({
       })
       .addCase(getActivityLogs.fulfilled, (state, action) => {
         state.activityLogs = action.payload;
+      })
+      .addCase(addProjectComment.fulfilled, (state, action) => {
+        state.projects = state.projects.map((p) =>
+          p._id === action.payload._id ? action.payload : p
+        );
       });
   },
 });

@@ -81,6 +81,20 @@ const deleteProject = async (id, token) => {
   return res.data;
 };
 
+const addProjectComment = async (id, message, token) => {
+  const res = await axios.post(
+    `${API_URL}/${id}/comments`,
+    { message },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+
 const getActivityLogs = async (token) => {
   const res = await axios.get(ACTIVITY_URL, {
     headers: {
@@ -100,4 +114,5 @@ export default {
   updateProject,
   deleteProject,
   getActivityLogs,
+  addProjectComment,
 };

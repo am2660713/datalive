@@ -21,9 +21,28 @@ const navItems = [
     icon: "Y",
   },
   {
+    key: "employee",
+    label: "My Work",
+    eyebrow: "Employee",
+    icon: "M",
+    employeeOnly: true,
+  },
+  {
+    key: "notifications",
+    label: "Notifications",
+    eyebrow: "Alerts",
+    icon: "N",
+  },
+  {
+    key: "reports",
+    label: "Reports",
+    eyebrow: "Summary",
+    icon: "R",
+  },
+  {
     key: "admin",
-    label: "Admin",
-    eyebrow: "Control",
+    label: "Settings",
+    eyebrow: "Admin",
     icon: "A",
     adminOnly: true,
   },
@@ -39,7 +58,12 @@ const navItems = [
 export default function Sidebar() {
   const { activeSheet, switchSheet, summary } = useAppContext();
   const user = useSelector((state) => state.auth.user);
-  const visibleItems = navItems.filter((item) => !item.adminOnly || user?.role === "admin");
+  const visibleItems = navItems.filter((item) => {
+    if (item.adminOnly && user?.role !== "admin") return false;
+    if (item.employeeOnly && user?.role !== "employee") return false;
+    if (item.key === "reports" && user?.role === "employee") return false;
+    return true;
+  });
 
   return (
     <aside className="sidebar">

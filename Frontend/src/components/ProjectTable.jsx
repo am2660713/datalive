@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteProject, updateProject } from "../features/projects/projectSlice";
+import { addProjectComment, deleteProject, updateProject } from "../features/projects/projectSlice";
 import { useAppContext } from "../context/AppContext";
 
 export default function ProjectTable() {
@@ -8,6 +8,7 @@ export default function ProjectTable() {
   const [editingId, setEditingId] = useState(null);
   const [editValues, setEditValues] = useState({});
   const [selectedProject, setSelectedProject] = useState(null);
+  const [commentText, setCommentText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -92,6 +93,17 @@ export default function ProjectTable() {
 
   const handleFieldChange = (field, value) => {
     setEditValues((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAddComment = async () => {
+    if (!selectedProject || !commentText.trim()) return;
+    const result = await dispatch(
+      addProjectComment({ id: selectedProject._id, message: commentText })
+    );
+    if (result.payload) {
+      setSelectedProject(result.payload);
+      setCommentText("");
+    }
   };
 
   return (
@@ -288,6 +300,34 @@ export default function ProjectTable() {
               ))}
             </div>
           )}
+
+          <div className="project-comments">
+            <strong>Comments</strong>
+            <div className="comment-list">
+              {(selectedProject.comments || []).length === 0 ? (
+                <span>No comments yet.</span>
+              ) : (
+                selectedProject.comments.map((comment) => (
+                  <div className="comment-item" key={comment._id || comment.createdAt}>
+                    <p>{comment.message}</p>
+                    <small>
+                      {comment.author?.name || "User"} · {comment.createdAt ? new Date(comment.createdAt).toLocaleString() : ""}
+                    </small>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="comment-form">
+              <input
+                value={commentText}
+                onChange={(event) => setCommentText(event.target.value)}
+                placeholder="Add project comment..."
+              />
+              <button className="btn btn-small btn-primary" onClick={handleAddComment}>
+                Add
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

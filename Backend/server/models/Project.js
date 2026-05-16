@@ -56,6 +56,24 @@ const projectSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
+    comments: [
+      {
+        message: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        author: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

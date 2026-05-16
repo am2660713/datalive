@@ -1,4 +1,5 @@
 import Topbar from "../components/Topbar";
+import Sidebar from "../components/Sidebar";
 import Ribbon from "../components/Ribbon";
 import SummaryCards from "../components/SummaryCards";
 import ProjectTable from "../components/ProjectTable";
@@ -13,7 +14,7 @@ import { getEmployees, getManagers, getProjects } from "../features/projects/pro
 import { useEffect } from "react";
 
 export default function Dashboard() {
-  const { activeSheet, switchSheet, chartsVisible, summary, authUser } = useAppContext();
+  const { activeSheet, chartsVisible, summary, authUser } = useAppContext();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
   const user = useSelector((state) => state.auth.user);
@@ -32,66 +33,58 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-shell">
-      <Topbar />
-      <Ribbon />
+      <Sidebar />
 
-      <div className="sheet-tabs">
-        <div
-          className={`sheet-tab ${activeSheet === "projects" ? "active" : ""}`}
-          onClick={() => switchSheet("projects")}
-        >
-          Project Tracking
-        </div>
-        <div
-          className={`sheet-tab ${activeSheet === "daily" ? "active" : ""}`}
-          onClick={() => switchSheet("daily")}
-        >
-          Daily Status Report
-        </div>
-        <div
-          className={`sheet-tab ${activeSheet === "yearly" ? "active" : ""}`}
-          onClick={() => switchSheet("yearly")}
-        >
-          Yearly Summary
-        </div>
-        {user?.role === "admin" && (
-          <div
-            className={`sheet-tab ${activeSheet === "admin" ? "active" : ""}`}
-            onClick={() => switchSheet("admin")}
-          >
-            Admin
+      <div className="workspace-main">
+        <Topbar />
+        <Ribbon />
+
+        <div className="workspace-heading">
+          <div>
+            <span className="workspace-kicker">Current page</span>
+            <h1>
+              {activeSheet === "projects"
+                ? "Project Tracking"
+                : activeSheet === "daily"
+                  ? "Daily Status Report"
+                  : activeSheet === "admin"
+                    ? "Admin Control"
+                    : "Yearly Summary"}
+            </h1>
           </div>
-        )}
-      </div>
+          <span className="workspace-pill">A.Y. 2026</span>
+        </div>
 
-      <div className={`page ${activeSheet === "projects" ? "active" : ""}`} id="page-projects">
-        <SummaryCards />
-        <ProjectTable />
-        {chartsVisible && <ProjectCharts />}
-      </div>
+        <div className="workspace-content">
+          <div className={`page ${activeSheet === "projects" ? "active" : ""}`} id="page-projects">
+            <SummaryCards />
+            <ProjectTable />
+            {chartsVisible && <ProjectCharts />}
+          </div>
 
-      <div className={`page ${activeSheet === "daily" ? "active" : ""}`} id="page-daily">
-        <DailyTable />
-      </div>
+          <div className={`page ${activeSheet === "daily" ? "active" : ""}`} id="page-daily">
+            <DailyTable />
+          </div>
 
-      <div className={`page ${activeSheet === "yearly" ? "active" : ""}`} id="page-yearly">
-        <YearlyTable />
-      </div>
+          <div className={`page ${activeSheet === "yearly" ? "active" : ""}`} id="page-yearly">
+            <YearlyTable />
+          </div>
 
-      <div className={`page ${activeSheet === "admin" ? "active" : ""}`} id="page-admin">
-        <AdminPanel />
-      </div>
+          <div className={`page ${activeSheet === "admin" ? "active" : ""}`} id="page-admin">
+            <AdminPanel />
+          </div>
+        </div>
 
-      <Modal />
+        <Modal />
 
-      <div className="status-bar">
-        <span id="sbSheet">
-          Sheet: {activeSheet === "projects" ? "Project Tracking" : activeSheet === "daily" ? "Daily Status Report" : activeSheet === "admin" ? "Admin" : "Yearly Summary"}
-        </span>
-        <span id="sbRows">Rows: {summary.total}</span>
-        <span>A.Y. 2026</span>
-        <span style={{ flex: 1 }}></span>
-        <span>{authUser?.name || "Employee Project Data"}</span>
+        <div className="status-bar">
+          <span id="sbSheet">
+            Sheet: {activeSheet === "projects" ? "Project Tracking" : activeSheet === "daily" ? "Daily Status Report" : activeSheet === "admin" ? "Admin" : "Yearly Summary"}
+          </span>
+          <span id="sbRows">Rows: {summary.total}</span>
+          <span style={{ flex: 1 }}></span>
+          <span>{authUser?.name || "Employee Project Data"}</span>
+        </div>
       </div>
     </div>
   );

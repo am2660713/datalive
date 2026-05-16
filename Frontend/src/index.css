@@ -1284,6 +1284,132 @@ td select {
   font-size: 10px;
 }
 
+.project-table-shell {
+  display: grid;
+  gap: 9px;
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 15px;
+  background: rgba(8, 24, 54, 0.76);
+  color: #dbe9ff;
+  font-size: 10px;
+  flex-wrap: wrap;
+}
+
+.pagination-bar select {
+  min-height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  padding: 4px 8px;
+  font-size: 10px;
+}
+
+.pagination-bar option {
+  color: #17365f;
+}
+
+.pagination-bar .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+.project-detail-drawer {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(210, 224, 243, 0.86);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(77, 149, 255, 0.14), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #edf7ff 100%);
+  box-shadow: 0 18px 44px rgba(4, 17, 44, 0.14);
+}
+
+.project-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.project-detail-head h3 {
+  color: #17365f;
+  font-size: 18px;
+  margin: 2px 0 0;
+}
+
+.project-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 8px;
+}
+
+.project-detail-grid div {
+  min-height: 58px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(173, 198, 232, 0.44);
+}
+
+.project-detail-grid span,
+.project-detail-grid strong {
+  display: block;
+}
+
+.project-detail-grid span {
+  color: #6a7d9c;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.project-detail-grid strong {
+  margin-top: 6px;
+  color: #17365f;
+  font-size: 12px;
+}
+
+.project-detail-footer,
+.project-mini-activity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.project-detail-footer > span:not(.priority-pill),
+.project-mini-activity span {
+  border-radius: 999px;
+  background: rgba(23, 78, 165, 0.08);
+  color: #285284;
+  padding: 5px 9px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.project-mini-activity {
+  align-items: flex-start;
+  flex-direction: column;
+  padding-top: 4px;
+}
+
+.project-mini-activity strong {
+  color: #17365f;
+  font-size: 12px;
+}
+
 .daily-empty-state {
   padding: 34px 18px;
   text-align: center;

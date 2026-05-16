@@ -1,10 +1,19 @@
 import Project from "../models/Project.js";
 import User from "../models/User.js";
+import ActivityLog from "../models/ActivityLog.js";
 import { getEffectiveRole } from "../utils/roles.js";
 
 const getManagerEmployeeIds = async (managerId) => {
   const employees = await User.find({ manager: managerId }).select("_id");
   return employees.map((employee) => employee._id);
+};
+
+const writeActivity = async (payload) => {
+  try {
+    await ActivityLog.create(payload);
+  } catch (error) {
+    console.warn("Activity log failed:", error.message);
+  }
 };
 
 export const createProject = async (req, res) => {
@@ -45,6 +54,20 @@ export const createProject = async (req, res) => {
     const populatedProject = await Project.findById(project._id)
       .populate("user", "name email role")
       .populate("assignedBy", "name email role");
+
+    await writeActivity({
+      action: "PROJECT_CREATED",
+      message: `${req.user.name} assigned project "${project.name}" to ${employee.name}`,
+      actor: req.user._id,
+      project: project._id,
+      targetUser: employee._id,
+      metadata: {
+        projectName: project.name,
+        employeeName: employee.name,
+        priority: project.priority,
+        deadline: project.deadline,
+      },
+    });
 
     res.status(201).json(populatedProject);
   } catch (error) {
@@ -99,6 +122,20 @@ export const updateProject = async (req, res) => {
       .populate("user", "name email role")
       .populate("assignedBy", "name email role");
 
+    await writeActivity({
+      action: "PROJECT_UPDATED",
+      message: `${req.user.name} updated project "${updated.name}"`,
+      actor: req.user._id,
+      project: updated._id,
+      targetUser: updated.user?._id || updated.user,
+      metadata: {
+        projectName: updated.name,
+        status: updated.status,
+        priority: updated.priority,
+        deadline: updated.deadline,
+      },
+    });
+
     res.json(updated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -125,6 +162,17 @@ export const deleteProject = async (req, res) => {
     }
 
     await project.deleteOne();
+
+    await writeActivity({
+      action: "PROJECT_DELETED",
+      message: `${req.user.name} deleted project "${project.name}"`,
+      actor: req.user._id,
+      targetUser: project.user,
+      metadata: {
+        projectName: project.name,
+        client: project.client,
+      },
+    });
 
     res.json({ message: "Project deleted" });
   } catch (error) {

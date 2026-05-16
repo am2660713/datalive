@@ -37,6 +37,15 @@ const projectSchema = new mongoose.Schema(
       enum: ["Delivered", "-", "Pending", "Not Submitted"],
       default: "-",
     },
+    priority: {
+      type: String,
+      enum: ["Low", "Medium", "High", "Urgent"],
+      default: "Medium",
+    },
+    deadline: {
+      type: Date,
+      default: null,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -52,5 +61,11 @@ const projectSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+projectSchema.index({ user: 1 });
+projectSchema.index({ assignedBy: 1 });
+projectSchema.index({ status: 1 });
+projectSchema.index({ priority: 1 });
+projectSchema.index({ deadline: 1 });
 
 export default mongoose.model("Project", projectSchema);

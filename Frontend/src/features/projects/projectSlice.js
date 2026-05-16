@@ -5,6 +5,7 @@ const initialState = {
   projects: [],
   employees: [],
   managers: [],
+  activityLogs: [],
   isLoading: false,
   isError: false,
   message: "",
@@ -95,6 +96,18 @@ export const deleteProject = createAsyncThunk(
   }
 );
 
+export const getActivityLogs = createAsyncThunk(
+  "projects/getActivityLogs",
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.token;
+      return await projectService.getActivityLogs(token);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data?.message);
+    }
+  }
+);
+
 const projectSlice = createSlice({
   name: "projects",
   initialState,
@@ -125,6 +138,9 @@ const projectSlice = createSlice({
       })
       .addCase(deleteProject.fulfilled, (state, action) => {
         state.projects = state.projects.filter((p) => p._id !== action.payload);
+      })
+      .addCase(getActivityLogs.fulfilled, (state, action) => {
+        state.activityLogs = action.payload;
       });
   },
 });

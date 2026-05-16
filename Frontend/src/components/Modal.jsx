@@ -186,6 +186,32 @@ export default function Modal() {
             <option value="Pending">Pending</option>
             <option value="Not Submitted">Not Submitted</option>
           </select>
+
+          <select
+            value={modalValues.priority || "Medium"}
+            onChange={(e) =>
+              setModalValues((prev) => ({
+                ...prev,
+                priority: e.target.value,
+              }))
+            }
+          >
+            <option value="Low">Low Priority</option>
+            <option value="Medium">Medium Priority</option>
+            <option value="High">High Priority</option>
+            <option value="Urgent">Urgent Priority</option>
+          </select>
+
+          <input
+            type="date"
+            value={modalValues.deadline ? String(modalValues.deadline).slice(0, 10) : ""}
+            onChange={(e) =>
+              setModalValues((prev) => ({
+                ...prev,
+                deadline: e.target.value,
+              }))
+            }
+          />
         </div>
 
         <div className="actions">

@@ -32,6 +32,8 @@ const defaultModalValues = {
   web: "",
   status: "",
   timesheet: "",
+  priority: "Medium",
+  deadline: "",
 };
 
 const AppContext = createContext(null);
@@ -271,7 +273,7 @@ function sortTable(field) {
   }
 
   async function saveProject() {
-    const { name, client, product, jobType, hours, web, status, timesheet } = modalValues;
+    const { name, client, product, jobType, hours, web, status, timesheet, priority, deadline } = modalValues;
     if (!name.trim() || !client.trim() || !product.trim()) {
       alert("Project name, client, and product line are required.");
       return;
@@ -287,6 +289,8 @@ function sortTable(field) {
       web: web.trim(),
       status,
       timesheet,
+      priority: priority || "Medium",
+      deadline: deadline || null,
     };
 
     if (editingIndex >= 0) {

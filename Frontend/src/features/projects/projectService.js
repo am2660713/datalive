@@ -5,6 +5,7 @@ const API_BASE =
   (import.meta.env.PROD ? "https://datalive-2.onrender.com/api" : "http://localhost:8080/api");
 const API_URL = `${API_BASE}/projects`;
 const AUTH_URL = `${API_BASE}/auth`;
+const ACTIVITY_URL = `${API_BASE}/activity`;
 
 const createProject = async (data, token) => {
   const res = await axios.post(API_URL, data, {
@@ -80,6 +81,16 @@ const deleteProject = async (id, token) => {
   return res.data;
 };
 
+const getActivityLogs = async (token) => {
+  const res = await axios.get(ACTIVITY_URL, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
 export default {
   createProject,
   getProjects,
@@ -88,4 +99,5 @@ export default {
   assignEmployeeManager,
   updateProject,
   deleteProject,
+  getActivityLogs,
 };

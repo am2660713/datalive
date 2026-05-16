@@ -27,6 +27,13 @@ const navItems = [
     icon: "A",
     adminOnly: true,
   },
+  {
+    key: "activity",
+    label: "Activity",
+    eyebrow: "Logs",
+    icon: "L",
+    adminOnly: true,
+  },
 ];
 
 export default function Sidebar() {

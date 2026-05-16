@@ -2,11 +2,20 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import ActivityLog from "../models/ActivityLog.js";
 import {
   getEffectiveRole,
   isApprovedAdminEmail,
   isApprovedManagerEmail,
 } from "../utils/roles.js";
+
+const writeActivity = async (payload) => {
+  try {
+    await ActivityLog.create(payload);
+  } catch (error) {
+    console.warn("Activity log failed:", error.message);
+  }
+};
 
 export const loginUser = async (req, res) => {
   try {
@@ -189,6 +198,19 @@ export const assignEmployeeManager = async (req, res) => {
     employee.manager = manager ? manager._id : null;
     await employee.save();
     await employee.populate("manager", "name email role");
+
+    await writeActivity({
+      action: "MANAGER_ASSIGNED",
+      message: manager
+        ? `${req.user.name} assigned ${employee.name} to manager ${manager.name}`
+        : `${req.user.name} removed manager assignment for ${employee.name}`,
+      actor: req.user._id,
+      targetUser: employee._id,
+      metadata: {
+        employeeName: employee.name,
+        managerName: manager?.name || "",
+      },
+    });
 
     res.json({
       _id: employee._id,

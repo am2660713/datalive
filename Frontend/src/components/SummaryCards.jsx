@@ -8,6 +8,11 @@ export default function SummaryCards() {
   const delivered = projects.filter(p => p.status === "Delivered").length;
   const inProgress = projects.filter(p => p.status === "In Progress").length;
   const blocked = projects.filter(p => p.status === "Blocked").length;
+  const urgent = projects.filter(p => ["High", "Urgent"].includes(p.priority)).length;
+  const overdue = projects.filter((p) => {
+    if (!p.deadline || p.status === "Delivered") return false;
+    return new Date(p.deadline) < new Date();
+  }).length;
   const hours = projects.reduce((sum, p) => sum + (Number(p.hours) || 0), 0);
   const clients = new Set(projects.map(p => p.client)).size;
   const isAdmin = user?.role === "admin";
@@ -33,6 +38,16 @@ export default function SummaryCards() {
       <div className="stat-card">
         <div className="stat-val">{blocked}</div>
         <div className="stat-lbl">Blocked</div>
+      </div>
+
+      <div className="stat-card">
+        <div className="stat-val">{urgent}</div>
+        <div className="stat-lbl">High Priority</div>
+      </div>
+
+      <div className="stat-card">
+        <div className="stat-val">{overdue}</div>
+        <div className="stat-lbl">Overdue</div>
       </div>
 
       <div className="stat-card">

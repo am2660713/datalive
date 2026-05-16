@@ -8,9 +8,10 @@ import YearlyTable from "../components/YearlyTable";
 import Modal from "../components/Modal";
 import ProjectCharts from "../components/ProjectCharts";
 import AdminPanel from "../components/AdminPanel";
+import ActivityLogPanel from "../components/ActivityLogPanel";
 import { useAppContext } from "../context/AppContext";
 import { useDispatch, useSelector } from "react-redux";
-import { getEmployees, getManagers, getProjects } from "../features/projects/projectSlice";
+import { getActivityLogs, getEmployees, getManagers, getProjects } from "../features/projects/projectSlice";
 import { useEffect } from "react";
 
 export default function Dashboard() {
@@ -27,9 +28,16 @@ export default function Dashboard() {
       }
       if (user?.role === "admin") {
         dispatch(getManagers());
+        dispatch(getActivityLogs());
       }
     }
   }, [dispatch, token, user?.role]);
+
+  useEffect(() => {
+    if (token && user?.role === "admin" && activeSheet === "activity") {
+      dispatch(getActivityLogs());
+    }
+  }, [activeSheet, dispatch, token, user?.role]);
 
   return (
     <div className="dashboard-shell">
@@ -57,13 +65,17 @@ export default function Dashboard() {
           <div className={`page ${activeSheet === "admin" ? "active" : ""}`} id="page-admin">
             <AdminPanel />
           </div>
+
+          <div className={`page ${activeSheet === "activity" ? "active" : ""}`} id="page-activity">
+            <ActivityLogPanel />
+          </div>
         </div>
 
         <Modal />
 
         <div className="status-bar">
           <span id="sbSheet">
-            Sheet: {activeSheet === "projects" ? "Project Tracking" : activeSheet === "daily" ? "Daily Status Report" : activeSheet === "admin" ? "Admin" : "Yearly Summary"}
+            Sheet: {activeSheet === "projects" ? "Project Tracking" : activeSheet === "daily" ? "Daily Status Report" : activeSheet === "admin" ? "Admin" : activeSheet === "activity" ? "Activity Logs" : "Yearly Summary"}
           </span>
           <span id="sbRows">Rows: {summary.total}</span>
           <span style={{ flex: 1 }}></span>

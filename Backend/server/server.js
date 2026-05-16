@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
 import dailyRoutes from "./routes/dailyRoutes.js";
 import targetRoutes from "./routes/target.js";
+import activityRoutes from "./routes/activityRoutes.js";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -49,6 +50,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/target", targetRoutes);
+app.use("/api/activity", activityRoutes);
 
 // ✅ GET daily
 app.use("/api/daily", dailyRoutes);

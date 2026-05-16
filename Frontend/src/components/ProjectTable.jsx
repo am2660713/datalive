@@ -38,6 +38,8 @@ export default function ProjectTable() {
       web: project.web || "",
       status: project.status || "Delivered",
       timesheet: project.timesheet || "Delivered",
+      priority: project.priority || "Medium",
+      deadline: project.deadline ? String(project.deadline).slice(0, 10) : "",
     });
   };
 
@@ -84,6 +86,8 @@ export default function ProjectTable() {
             <th>WEB</th>
             <th>Status</th>
             <th>Timesheet</th>
+            <th>Priority</th>
+            <th>Deadline</th>
             {showAssignedTo && <th>Assigned To</th>}
             {showAssignedTo && <th>Assigned By</th>}
             {canManageProjects && <th>Actions</th>}
@@ -99,6 +103,8 @@ export default function ProjectTable() {
               <th><input className="filter-input" value={filters.f6 || ""} placeholder={filterFields.f6} onChange={(e) => updateFilter("f6", e.target.value)} /></th>
               <th><input className="filter-input" value={filters.f7 || ""} placeholder={filterFields.f7} onChange={(e) => updateFilter("f7", e.target.value)} /></th>
               <th><input className="filter-input" value={filters.f8 || ""} placeholder={filterFields.f8} onChange={(e) => updateFilter("f8", e.target.value)} /></th>
+              <th></th>
+              <th></th>
               {showAssignedTo && <th></th>}
               {showAssignedTo && <th></th>}
               {canManageProjects && <th></th>}
@@ -109,7 +115,7 @@ export default function ProjectTable() {
         <tbody>
           {filteredProjects.length === 0 ? (
             <tr>
-              <td colSpan={(showAssignedTo ? 11 : 9) + (canManageProjects ? 1 : 0)} style={{ textAlign: "center" }}>
+              <td colSpan={(showAssignedTo ? 13 : 11) + (canManageProjects ? 1 : 0)} style={{ textAlign: "center" }}>
                 No Projects Found
               </td>
             </tr>
@@ -148,6 +154,27 @@ export default function ProjectTable() {
                       </select>
                     ) : (
                       project.timesheet
+                    )}
+                  </td>
+                  <td>
+                    {isEditing ? (
+                      <select className="table-input" value={editValues.priority} onChange={(e) => handleFieldChange("priority", e.target.value)}>
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option>High</option>
+                        <option>Urgent</option>
+                      </select>
+                    ) : (
+                      <span className={`priority-pill priority-${(project.priority || "Medium").toLowerCase()}`}>
+                        {project.priority || "Medium"}
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    {isEditing ? (
+                      <input className="table-input" type="date" value={editValues.deadline || ""} onChange={(e) => handleFieldChange("deadline", e.target.value)} />
+                    ) : (
+                      project.deadline ? new Date(project.deadline).toLocaleDateString() : "-"
                     )}
                   </td>
                   {showAssignedTo && <td>{project.user?.name || "-"}</td>}

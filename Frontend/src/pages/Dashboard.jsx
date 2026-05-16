@@ -39,22 +39,6 @@ export default function Dashboard() {
         <Topbar />
         <Ribbon />
 
-        <div className="workspace-heading">
-          <div>
-            <span className="workspace-kicker">Current page</span>
-            <h1>
-              {activeSheet === "projects"
-                ? "Project Tracking"
-                : activeSheet === "daily"
-                  ? "Daily Status Report"
-                  : activeSheet === "admin"
-                    ? "Admin Control"
-                    : "Yearly Summary"}
-            </h1>
-          </div>
-          <span className="workspace-pill">A.Y. 2026</span>
-        </div>
-
         <div className="workspace-content">
           <div className={`page ${activeSheet === "projects" ? "active" : ""}`} id="page-projects">
             <SummaryCards />

@@ -1,11 +1,13 @@
 import { useEffect } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAppContext } from "../context/AppContext";
 import { createProject, getEmployees } from "../features/projects/projectSlice";
 
 export default function Modal() {
   const dispatch = useDispatch();
-  const { modalOpen, closeModal, modalValues, setModalValues } = useAppContext();
+  const [saving, setSaving] = useState(false);
+  const { modalOpen, closeModal, modalValues, setModalValues, showToast } = useAppContext();
   const user = useSelector((state) => state.auth.user);
   const employees = useSelector((state) => state.projects.employees);
   const canAssignProject = ["admin", "manager"].includes(user?.role);
@@ -20,17 +22,18 @@ export default function Modal() {
 
   const handleSave = async () => {
     if (!modalValues.name || !modalValues.client || !modalValues.product) {
-      alert("Please fill required fields");
+      showToast("Please fill required project fields.", "error");
       return;
     }
 
     if (canAssignProject && !modalValues.assigneeId) {
-      alert("Please select an employee");
+      showToast("Please select an employee.", "error");
       return;
     }
 
     try {
-      await dispatch(
+      setSaving(true);
+      const result = await dispatch(
         createProject({
           ...modalValues,
           assigneeId: canAssignProject ? modalValues.assigneeId : undefined,
@@ -40,9 +43,18 @@ export default function Modal() {
         })
       );
 
+      if (result.error) {
+        showToast(result.payload || "Unable to create project.", "error");
+        return;
+      }
+
+      showToast("Project created successfully.");
       closeModal();
     } catch (err) {
       console.error(err);
+      showToast("Unable to create project.", "error");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -219,8 +231,8 @@ export default function Modal() {
             Cancel
           </button>
 
-          <button className="ribbon-btn active" onClick={handleSave}>
-            Save
+          <button className="ribbon-btn active" onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save"}
           </button>
         </div>
       </div>

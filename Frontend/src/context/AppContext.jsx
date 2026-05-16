@@ -57,6 +57,7 @@ export function AppProvider({ children }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({ f0: "", f1: "", f2: "", f3: "", f4: "", f6: "", f7: "", f8: "" });
   const [sortDir, setSortDir] = useState({});
+  const [toast, setToast] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const reduxProjects = useSelector((state) => state.projects.projects);
 
@@ -238,6 +239,14 @@ export function AppProvider({ children }) {
   function clearFilters() {
     setSearchQuery("");
     setFilters({ f0: "", f1: "", f2: "", f3: "", f4: "", f6: "", f7: "", f8: "" });
+  }
+
+  function showToast(message, type = "success") {
+    if (!message) {
+      setToast(null);
+      return;
+    }
+    setToast({ message, type, id: Date.now() });
   }
 
 function sortTable(field) {
@@ -597,12 +606,14 @@ function sortTable(field) {
         modalValues,
         searchQuery,
         filters,
+        toast,
         summary,
         authUser,
         dailySummary,
         yearlySummary,
         setSearchQuery,
         setFilters,
+        showToast,
         switchSheet,
         toggleFilters,
         toggleCharts,

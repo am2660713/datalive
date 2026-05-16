@@ -11,10 +11,13 @@ export default function ProjectTable() {
   const [commentText, setCommentText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [savingId, setSavingId] = useState(null);
+  const [commentSaving, setCommentSaving] = useState(false);
 
-  const { filteredProjects, filters, filtersVisible, setFilters } = useAppContext();
+  const { filteredProjects, filters, filtersVisible, setFilters, showToast } = useAppContext();
   const user = useSelector((state) => state.auth.user);
   const activityLogs = useSelector((state) => state.projects.activityLogs);
+  const isLoading = useSelector((state) => state.projects.isLoading);
 
   const showAssignedTo = ["admin", "manager"].includes(user?.role);
   const canManageProjects = ["admin", "manager"].includes(user?.role);
@@ -73,11 +76,12 @@ export default function ProjectTable() {
 
   const saveEdit = async () => {
     if (!editValues.name || !editValues.client || !editValues.product) {
-      alert("Project name, client, and product line are required.");
+      showToast("Project name, client, and product line are required.", "error");
       return;
     }
 
-    await dispatch(
+    setSavingId(editingId);
+    const result = await dispatch(
       updateProject({
         id: editingId,
         data: {
@@ -86,9 +90,16 @@ export default function ProjectTable() {
         },
       })
     );
+    setSavingId(null);
+
+    if (result.error) {
+      showToast(result.payload || "Project update failed.", "error");
+      return;
+    }
 
     setEditingId(null);
     setEditValues({});
+    showToast("Project updated successfully.");
   };
 
   const handleFieldChange = (field, value) => {
@@ -97,18 +108,36 @@ export default function ProjectTable() {
 
   const handleAddComment = async () => {
     if (!selectedProject || !commentText.trim()) return;
+    setCommentSaving(true);
     const result = await dispatch(
       addProjectComment({ id: selectedProject._id, message: commentText })
     );
+    setCommentSaving(false);
     if (result.payload) {
       setSelectedProject(result.payload);
       setCommentText("");
+      showToast("Comment added successfully.");
+    } else {
+      showToast(result.payload || "Unable to add comment.", "error");
     }
+  };
+
+  const handleDelete = async (project) => {
+    const confirmed = window.confirm(`Are you sure you want to delete "${project.name}"?`);
+    if (!confirmed) return;
+
+    const result = await dispatch(deleteProject(project._id));
+    if (result.error) {
+      showToast(result.payload || "Project delete failed.", "error");
+      return;
+    }
+    showToast("Project deleted successfully.");
   };
 
   return (
     <div className="project-table-shell">
       <div className="table-container">
+        {isLoading && <div className="table-loading">Loading project data...</div>}
         <table>
           <thead>
             <tr>
@@ -223,13 +252,15 @@ export default function ProjectTable() {
                       <td className="table-actions">
                         {isEditing ? (
                           <>
-                            <button onClick={saveEdit} className="btn btn-small btn-primary">Save</button>
+                            <button onClick={saveEdit} className="btn btn-small btn-primary" disabled={savingId === project._id}>
+                              {savingId === project._id ? "Saving..." : "Save"}
+                            </button>
                             <button onClick={cancelEdit} className="btn btn-small btn-ghost">Cancel</button>
                           </>
                         ) : (
                           <>
                             <button onClick={() => startEdit(project)} className="btn btn-small btn-secondary">Edit</button>
-                            <button onClick={() => dispatch(deleteProject(project._id))} className="btn btn-small btn-danger">Delete</button>
+                            <button onClick={() => handleDelete(project)} className="btn btn-small btn-danger">Delete</button>
                           </>
                         )}
                       </td>
@@ -323,8 +354,8 @@ export default function ProjectTable() {
                 onChange={(event) => setCommentText(event.target.value)}
                 placeholder="Add project comment..."
               />
-              <button className="btn btn-small btn-primary" onClick={handleAddComment}>
-                Add
+              <button className="btn btn-small btn-primary" onClick={handleAddComment} disabled={commentSaving}>
+                {commentSaving ? "Adding..." : "Add"}
               </button>
             </div>
           </div>

@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import projectService from "./projectService";
 
+const isProjectPending = (action) =>
+  action.type.startsWith("projects/") && action.type.endsWith("/pending");
+const isProjectSettled = (action) =>
+  action.type.startsWith("projects/") &&
+  (action.type.endsWith("/fulfilled") || action.type.endsWith("/rejected"));
+
 const initialState = {
   projects: [],
   employees: [],
@@ -158,6 +164,18 @@ const projectSlice = createSlice({
         state.projects = state.projects.map((p) =>
           p._id === action.payload._id ? action.payload : p
         );
+      })
+      .addMatcher(isProjectPending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.message = "";
+      })
+      .addMatcher(isProjectSettled, (state, action) => {
+        state.isLoading = false;
+        if (action.type.endsWith("/rejected")) {
+          state.isError = true;
+          state.message = action.payload || "Something went wrong";
+        }
       });
   },
 });

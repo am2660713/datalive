@@ -7,6 +7,15 @@ const getAuthHeaders = () => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+const handleUnauthorized = () => {
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+  window.dispatchEvent(new Event("app-auth-updated"));
+  if (window.location.pathname !== "/login") {
+    window.location.assign("/login");
+  }
+};
+
 // Helper for API calls
 async function fetchAPI(url, options = {}) {
   try {
@@ -19,6 +28,9 @@ async function fetchAPI(url, options = {}) {
       },
     });
     if (!response.ok) {
+      if (response.status === 401) {
+        handleUnauthorized();
+      }
       throw new Error(`API error: ${response.status}`);
     }
     return await response.json();

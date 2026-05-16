@@ -1,13 +1,20 @@
 import { useDispatch, useSelector } from "react-redux";
 import { assignEmployeeManager } from "../features/projects/projectSlice";
+import { useAppContext } from "../context/AppContext";
 
 export default function AdminPanel() {
   const dispatch = useDispatch();
+  const { showToast } = useAppContext();
   const { employees, managers } = useSelector((state) => state.projects);
   const assignableEmployees = employees.filter((employee) => employee.role === "employee");
 
-  const handleManagerChange = (employeeId, managerId) => {
-    dispatch(assignEmployeeManager({ employeeId, managerId }));
+  const handleManagerChange = async (employeeId, managerId) => {
+    const result = await dispatch(assignEmployeeManager({ employeeId, managerId }));
+    if (result.error) {
+      showToast(result.payload || "Manager assignment failed.", "error");
+      return;
+    }
+    showToast("Manager assignment updated.");
   };
 
   return (

@@ -9,6 +9,21 @@ const authClient = axios.create({
   timeout: 10000,
 });
 
+authClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      notifyAuthUpdated();
+      if (window.location.pathname !== "/login") {
+        window.location.assign("/login");
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 const notifyAuthUpdated = () => {
   window.dispatchEvent(new Event("app-auth-updated"));
 };

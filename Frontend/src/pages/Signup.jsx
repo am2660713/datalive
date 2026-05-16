@@ -127,6 +127,9 @@ export default function Signup() {
                 {showPass ? "Hide" : "Show"}
               </button>
             </div>
+            <p className="password-hint">
+              Use at least 6 characters. A mix of letters, numbers, and symbols is safer.
+            </p>
 
             <label>Confirm password</label>
             <input

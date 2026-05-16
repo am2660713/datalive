@@ -7,6 +7,21 @@ const API_URL = `${API_BASE}/projects`;
 const AUTH_URL = `${API_BASE}/auth`;
 const ACTIVITY_URL = `${API_BASE}/activity`;
 
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      window.dispatchEvent(new Event("app-auth-updated"));
+      if (window.location.pathname !== "/login") {
+        window.location.assign("/login");
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 const createProject = async (data, token) => {
   const res = await axios.post(API_URL, data, {
     headers: {
